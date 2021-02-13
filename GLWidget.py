@@ -2,6 +2,9 @@ from OpenGL.GL import *
 from generator import FIGURE_GENERATOR
 from PyQt5.QtOpenGL import QGLWidget
 
+
+from presets import PRESETS
+
 FIGURES = [
     GL_POINTS,
     GL_LINES,
@@ -55,17 +58,6 @@ BLEND_DEST = [
     GL_DST_ALPHA,
     GL_ONE_MINUS_DST_ALPHA,
 ]
-TEST_TRIANGLE_FAN = [
-    [0, -1, -1, -1, -.5, -.5],
-    [0, 1],
-    [.5, -.5],
-    [1, -1],
-]
-TEST_QUAD_STRIP = [
-    [-.75, -.25, -.75, .25, -.25, -.75, -.25, .75],
-    [.25, -.75, .25, .75],
-    [.75, -.25, .75, .25]
-]
 SIZE_WIDGET = 480
 
 
@@ -87,6 +79,7 @@ class GLWidget(QGLWidget):
         self.alpha_value = 1
         self.blend_src = 0
         self.blend_dest = 1
+        self.presets_on = False
 
     def paintGL(self):
         glClearColor(0, 0, 0, 0)
@@ -143,10 +136,8 @@ class GLWidget(QGLWidget):
         if n is not None:
             self.n_figures = n
         self.points = FIGURE_GENERATOR[self.cur_index_figure](self.n_figures)
-        if self.cur_figure is GL_TRIANGLE_FAN:
-            self.points = TEST_TRIANGLE_FAN
-        if self.cur_figure is GL_QUAD_STRIP:
-            self.points = TEST_QUAD_STRIP
+        if self.presets_on:
+            self.points = PRESETS[self.cur_index_figure]
         self.updateGL()
 
     def scissor(self, x1, y1, x2, y2):
@@ -171,3 +162,8 @@ class GLWidget(QGLWidget):
     def update_blend_dest(self, index):
         self.blend_dest = index
         self.updateGL()
+
+    def update_presets_flag(self, state):
+        self.presets_on = state
+        self.update_figure()
+

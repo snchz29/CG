@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5 import QtCore, QtWidgets
 from GLWidget import GLWidget
@@ -23,7 +24,7 @@ class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.widget = GLWidget()
-        self.setWindowTitle("Terekhov 8382 LR 1")
+        self.setWindowTitle("Terekhov 8382 LR 1 & 2")
         self.label_x1_value = QtWidgets.QLabel("0")
         self.label_y1_value = QtWidgets.QLabel("1.0")
         self.label_x2_value = QtWidgets.QLabel("0")
@@ -32,8 +33,9 @@ class MainWindow(QtWidgets.QWidget):
         self.line_edit_n_points = QtWidgets.QLineEdit()
         self.line_edit_n_points.setValidator(QIntValidator())
         self.line_edit_n_points.textChanged.connect(self.update_n_figures)
-        self.line_edit_n_points.setText('50')
-
+        self.line_edit_n_points.setText('5')
+        self.check_box_presets = QtWidgets.QCheckBox("Use presets", self)
+        self.check_box_presets.stateChanged.connect(self.update_checkbox)
         main_layout = QtWidgets.QHBoxLayout()
         main_layout.addWidget(self.widget)
         config_layout = QtWidgets.QVBoxLayout()
@@ -44,7 +46,11 @@ class MainWindow(QtWidgets.QWidget):
         config_layout.addWidget(QtWidgets.QLabel("Figure"))
         config_layout.addWidget(self.combo_box_figure)
         config_layout.addWidget(QtWidgets.QLabel("Quantity of figures"))
-        config_layout.addWidget(self.line_edit_n_points)
+
+        count_layout = QtWidgets.QHBoxLayout()
+        count_layout.addWidget(self.line_edit_n_points)
+        count_layout.addWidget(self.check_box_presets)
+        config_layout.addLayout(count_layout)
         config_layout.addWidget(QtWidgets.QLabel("LAB 2"))
         config_layout.addWidget(QtWidgets.QLabel("Scissor test"))
 
@@ -162,7 +168,6 @@ class MainWindow(QtWidgets.QWidget):
         if self.scissor_range_x1.value() > self.scissor_range_x2.value():
             self.scissor_range_x1.setValue(self.scissor_range_x2.value())
 
-
     @scissor
     def y1_change(self):
         if self.scissor_range_y1.value() > self.scissor_range_y2.value():
@@ -205,3 +210,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def update_blend_dest(self, index):
         self.widget.update_blend_src(index)
+
+    def update_checkbox(self, state):
+        self.line_edit_n_points.setDisabled(state)
+        self.widget.update_presets_flag(state)

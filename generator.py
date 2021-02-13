@@ -20,14 +20,14 @@ def create_quad_strip(n):
 
 
 FIGURE_GENERATOR = [
-    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],  # n x 2
-    lambda n: [[(random() - .5) * 2 for i in range(4)] for _ in range(n)],  # n x 4
-    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n+1)],  # n x 2
-    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],  # n x 2
-    lambda n: [[(random() - .5) * 2 for i in range(6)] for _ in range(n)],  # n x 6
-    create_triangle_strip_and_fan,  # n x 6 + n x 2
-    create_triangle_strip_and_fan,  # n x 6 + n x 2
-    lambda n: [[(random() - .5) * 2 for i in range(8)] for _ in range(n)],  # n x 8
-    create_quad_strip,
-    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],  # n x 2
+    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],      # n x 2
+    lambda n: [[(random() - .5) * 2 for i in range(4)] for _ in range(n)],      # n x 4
+    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n + 1)],  # n x 2
+    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],      # n x 2
+    lambda n: [[(random() - .5) * 2 for i in range(6)] for _ in range(n)],      # n x 6
+    create_triangle_strip_and_fan,                                              # n x 6 + n x 2
+    create_triangle_strip_and_fan,                                              # n x 6 + n x 2
+    lambda n: [[(random() - .5) * 2 for i in range(8)] for _ in range(n)],      # n x 8
+    create_quad_strip,                                                          # n x 8 + n x 4
+    lambda n: [[(random() - .5) * 2 for i in range(2)] for _ in range(n)],      # n x 2
 ]
