@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5 import QtCore, QtWidgets
+
 from GLWidget import GLWidget
 
 MAX_SLIDER_VALUE = 100
@@ -82,17 +82,19 @@ class MainWindow(QtWidgets.QWidget):
         config_layout.addWidget(self.combo_box_alpha)
         config_layout.addWidget(self.slider_alpha)
 
-        config_layout.addWidget(QtWidgets.QLabel("Blend"))
+        config_layout.addWidget(QtWidgets.QLabel("Blend test"))
         config_layout.addWidget(QtWidgets.QLabel("Source"))
         self.init_combo_box_blend_src()
         config_layout.addWidget(self.combo_box_blend_src)
         config_layout.addWidget(QtWidgets.QLabel("Destination"))
         self.init_combo_box_blend_dest()
         config_layout.addWidget(self.combo_box_blend_dest)
-
-        main_layout.addLayout(config_layout)
+        config_widget = QtWidgets.QWidget(self)
+        config_widget.setLayout(config_layout)
+        config_widget.setMaximumSize(350, 500)
+        main_layout.addWidget(config_widget)
         self.setLayout(main_layout)
-        self.setMinimumSize(720, 500)
+        self.setMinimumSize(800, 500)
 
     def init_combo_box_figures(self):
         self.combo_box_figure = QtWidgets.QComboBox(self)
@@ -209,7 +211,7 @@ class MainWindow(QtWidgets.QWidget):
         self.widget.update_blend_src(index)
 
     def update_blend_dest(self, index):
-        self.widget.update_blend_src(index)
+        self.widget.update_blend_dest(index)
 
     def update_checkbox(self, state):
         self.line_edit_n_points.setDisabled(state)

@@ -1,8 +1,8 @@
 from OpenGL.GL import *
-from generator import FIGURE_GENERATOR
+from PyQt5 import QtGui
 from PyQt5.QtOpenGL import QGLWidget
 
-
+from generator import FIGURE_GENERATOR
 from presets import PRESETS
 
 FIGURES = [
@@ -28,14 +28,14 @@ ALPHA = [
     GL_GEQUAL,
 ]
 COLORS = [
-    (1, 1, 1, 0),       # white
-    (1, 0, 0, 7/7),     # red
-    (1, .5, 0, 6/7),    # orange
-    (1, 1, 0, 5/7),     # yellow
-    (0, 1, 0, 4/7),     # green
-    (0, 1, 1, 3/7),     # cian
-    (0, 0, 1, 2/7),     # blue
-    (1, 0, 1, 1/7),     # indigo
+    (1, 1, 1, 0),  # white
+    (1, 0, 0, 7 / 7),  # red
+    (1, .5, 0, 6 / 7),  # orange
+    (1, 1, 0, 5 / 7),  # yellow
+    (0, 1, 0, 4 / 7),  # green
+    (0, 1, 1, 3 / 7),  # cian
+    (0, 0, 1, 2 / 7),  # blue
+    (1, 0, 1, 1 / 7),  # indigo
 ]
 BLEND_SRC = [
     GL_ONE,
@@ -65,8 +65,8 @@ class GLWidget(QGLWidget):
     def __init__(self, *__args):
         super().__init__(*__args)
         self.setMinimumSize(SIZE_WIDGET, SIZE_WIDGET)
-        self.setMaximumSize(SIZE_WIDGET, SIZE_WIDGET)
-        self.n_figures = 50
+        self.setMaximumSize(SIZE_WIDGET * 2, SIZE_WIDGET * 2)
+        self.n_figures = 5
         self.cur_index_figure = 0
         self.points = FIGURE_GENERATOR[0](self.n_figures)
         self.cur_figure = FIGURES[self.cur_index_figure]
@@ -78,7 +78,7 @@ class GLWidget(QGLWidget):
         self.cur_alpha = 0
         self.alpha_value = 1
         self.blend_src = 0
-        self.blend_dest = 1
+        self.blend_dest = 0
         self.presets_on = False
 
     def paintGL(self):
@@ -96,34 +96,31 @@ class GLWidget(QGLWidget):
         glDisable(GL_SCISSOR_TEST)
 
     def resizeGL(self, w: int, h: int):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
+        glViewport(0, 0, min((w, h)), min((w, h)))
         glOrtho(-1, 1, -1, 1, -1.0, 1.0)
-        glViewport(0, 0, w, h)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
 
     def show_figure(self):
         self.cur_color_index = 0
         glBegin(self.cur_figure)
         for point in self.points:
-            color = self.get_color()
-            glColor4f(*color)
+            glColor4f(*self.get_color())
             glVertex2d(point[0], point[1])
             if len(point) >= 4:
-                color = self.get_color()
-                glColor4f(*color)
+                glColor4f(*self.get_color())
                 glVertex2d(point[2], point[3])
             if len(point) >= 6:
-                color = self.get_color()
-                glColor4f(*color)
+                glColor4f(*self.get_color())
                 glVertex2d(point[4], point[5])
             if len(point) >= 8:
-                color = self.get_color()
-                glColor4f(*color)
+                glColor4f(*self.get_color())
                 glVertex2d(point[6], point[7])
         glEnd()
-        glFlush()
+
+    def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
+        w = e.size().width()
+        h = e.size().height()
+        self.resize(min(w, h), min(w, h))
+        glViewport(0, 0, min((w, h)), min((w, h)))
 
     def get_color(self):
         self.cur_color_index = (self.cur_color_index + 1) % len(COLORS)
@@ -133,6 +130,7 @@ class GLWidget(QGLWidget):
         if index is not None:
             self.cur_index_figure = index
             self.cur_figure = FIGURES[index]
+
         if n is not None:
             self.n_figures = n
         self.points = FIGURE_GENERATOR[self.cur_index_figure](self.n_figures)
@@ -166,4 +164,3 @@ class GLWidget(QGLWidget):
     def update_presets_flag(self, state):
         self.presets_on = state
         self.update_figure()
-
