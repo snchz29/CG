@@ -1,9 +1,14 @@
-from PyQt5.QtGui import QIntValidator
-from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
+
+from Lb_3.gui.drawarea import DrawArea
 
 
-class MainWindow(QtWidgets.QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Nechepurenko & Terekhov Limited")
-
+        self.setWindowTitle("Nechepurenko & Terekhov Ltd.")
+        self._main_layout = QVBoxLayout()
+        self.setLayout(self._main_layout)
+        self._draw_area = DrawArea()
+        self._main_layout.addWidget(self._draw_area)
+        self.setMaximumSize(600, 480)
