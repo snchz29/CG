@@ -1,0 +1,3 @@
+pyqt5
+PyOpenGL
+PyOpenGL_accelerate
