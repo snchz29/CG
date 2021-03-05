@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+import logging
 import numpy as np
 
 
@@ -8,60 +8,48 @@ class BSpline:
             raise Exception('m != n + p + 1')
         if len(control_points) != len(weights):
             raise Exception('Length of weights must be equal to length of control points vector!')
-        self.degree = degree
-        self.knot_vector = np.array(knot_vector)
-        self.weights = np.array(weights)
-        self.control_points = np.array(control_points)
-        for p in self.control_points:
-            p = np.array(p)
+        self._degree = degree
+        self._knot_vector = np.array(knot_vector)
+        self._weights = np.array(weights)
+        self._control_points = np.array([np.array(list(point)) for point in control_points])
+        self._cache = {}
 
-    def b_spline_basis_function(self, i, p, u):
+    def _b_spline_basis_function(self, i, p, u):
+        if (i, p, u) in self._cache:
+            return self._cache.get((i, p, u))
         res = 0
         if p == 0:
-            return 1 if self.knot_vector[i] <= u < self.knot_vector[i + 1] else 0
-        if self.knot_vector[i + p] - self.knot_vector[i] != 0:
-            res += (u - self.knot_vector[i]) / (
-                    self.knot_vector[i + p] - self.knot_vector[i]) * self.b_spline_basis_function(i, p - 1, u)
-        if self.knot_vector[i + p + 1] - self.knot_vector[i + 1] != 0:
-            res += (self.knot_vector[i + p + 1] - u) / (
-                    self.knot_vector[i + p + 1] - self.knot_vector[i + 1]) * self.b_spline_basis_function(i + 1,
+            return 1 if self._knot_vector[i] <= u < self._knot_vector[i + 1] else 0
+        if self._knot_vector[i + p] - self._knot_vector[i] != 0:
+            res += (u - self._knot_vector[i]) / (
+                    self._knot_vector[i + p] - self._knot_vector[i]) * self._b_spline_basis_function(i, p - 1, u)
+        if self._knot_vector[i + p + 1] - self._knot_vector[i + 1] != 0:
+            res += (self._knot_vector[i + p + 1] - u) / (
+                    self._knot_vector[i + p + 1] - self._knot_vector[i + 1]) * self._b_spline_basis_function(i + 1,
                                                                                                           p - 1, u)
+        self._cache[(i, p, u)] = res
         return res
 
-    def nurbs_basis_function(self, i, u):
-        return (self.b_spline_basis_function(i, self.degree, u) * self.weights[i]) / \
-               sum([self.b_spline_basis_function(j, self.degree, u) * self.weights[j] for j in
-                    range(len(self.weights))])
 
-    def nurbs_curve(self, u):
-        return np.sum([self.nurbs_basis_function(i, u) * self.control_points[i] for i in range(len(self.weights))],axis=0)
+class NURBSpline3deg6points(BSpline):
+    def __init__(self, points):
+        assert len(points) == 6
+        super().__init__(3, [i/9 for i in range(10)], [point.get_weight() for point in points],
+                         [point.get_coordinates().values() for point in points])
 
-    def plot(self):
+    def _nurbs_basis_function(self, i, u):
+        return (self._b_spline_basis_function(i, self._degree, u) * self._weights[i]) / \
+               sum([self._b_spline_basis_function(j, self._degree, u) * self._weights[j] for j in
+                    range(len(self._weights))])
+
+    def _nurbs_curve(self, u):
+        return np.sum([self._nurbs_basis_function(i, u) * self._control_points[i] for i in range(len(self._weights))],
+                      axis=0)
+
+    def get_nurbs_curve_points(self):
         x = np.arange(0, 1, step=0.01)
-        y = [[self.nurbs_basis_function(i, x_) for x_ in x] for i in range(len(self.weights))]
-        for y_ in y:
-            plt.plot(x, y_)
-        plt.show()
-        points = [self.nurbs_curve(x_) for x_ in x]
-        x = []
-        y = []
-        for point in points:
-            x.append(point[0])
-            y.append(point[1])
-        plt.plot(x, y)
-        plt.axis('equal')
-        plt.show()
+        return [self._nurbs_curve(i) for i in x][1:]
 
-
-if __name__ == '__main__':
-    points = [
-        [0, 0],
-        [1, 1],
-        [2, 10],
-        [3, -10],
-        [4, 3],
-        [5, 7],
-        [6, 7],
-    ]
-    spline = BSpline(3, [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1], [1, 1, 1, 1, 1, 1, 1], points)
-    spline.plot()
+    def set_points(self, points):
+        self._control_points = np.array([np.array(list(point.get_coordinates().values())) for point in points])
+        self._weights = np.array([point.get_weight() for point in points])
