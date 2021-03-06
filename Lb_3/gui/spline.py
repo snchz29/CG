@@ -1,4 +1,3 @@
-import logging
 import numpy as np
 
 
@@ -26,7 +25,7 @@ class BSpline:
         if self._knot_vector[i + p + 1] - self._knot_vector[i + 1] != 0:
             res += (self._knot_vector[i + p + 1] - u) / (
                     self._knot_vector[i + p + 1] - self._knot_vector[i + 1]) * self._b_spline_basis_function(i + 1,
-                                                                                                          p - 1, u)
+                                                                                                             p - 1, u)
         self._cache[(i, p, u)] = res
         return res
 
@@ -34,13 +33,15 @@ class BSpline:
 class NURBSpline3deg6points(BSpline):
     def __init__(self, points):
         assert len(points) == 6
-        super().__init__(3, [i/9 for i in range(10)], [point.get_weight() for point in points],
+        super().__init__(3, [i / 9 for i in range(10)], [point.get_weight() for point in points],
                          [point.get_coordinates().values() for point in points])
 
     def _nurbs_basis_function(self, i, u):
-        return (self._b_spline_basis_function(i, self._degree, u) * self._weights[i]) / \
-               sum([self._b_spline_basis_function(j, self._degree, u) * self._weights[j] for j in
-                    range(len(self._weights))])
+        denominator = sum([self._b_spline_basis_function(j, self._degree, u) * self._weights[j] for j in
+                           range(len(self._weights))])
+        if denominator == 0.:
+            denominator = 1e-3
+        return (self._b_spline_basis_function(i, self._degree, u) * self._weights[i]) / denominator
 
     def _nurbs_curve(self, u):
         return np.sum([self._nurbs_basis_function(i, u) * self._control_points[i] for i in range(len(self._weights))],
