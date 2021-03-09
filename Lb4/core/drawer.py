@@ -61,8 +61,6 @@ class RecFractalGenerator:
     def rec(self, shape: list, theta: float = 0, dx: float = 1, dy: float = 1, cx: float = 0, cy: float = 0,
             depth=0):
         new_shape = []
-        if depth > self._max_depth:
-            return
         for s in shape:
             new_shape.append(
                 [(self.rot[0][0](theta) * s[0] + cx) * dx * .5 + (self.rot[0][1](theta) * s[1] + cx) * dy * .5,
@@ -73,7 +71,7 @@ class RecFractalGenerator:
             self._sqs.append(self.rec(new_shape, *self._params[2], depth + 1))
             self._sqs.append(self.rec(new_shape, *self._params[3], depth + 1))
             self._sqs.append(self.rec(new_shape, *self._params[4], depth + 1))
-        else:
+        elif depth < self._max_depth:
             self.rec(new_shape, *self._params[0], depth + 1)
             self.rec(new_shape, *self._params[1], depth + 1)
             self.rec(new_shape, *self._params[2], depth + 1)
