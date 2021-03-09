@@ -9,7 +9,7 @@ class ControlPanel(QWidget):
     def __init__(self):
         super().__init__()
         self._drawer = Drawer()
-        self._iterations_validator = QIntValidator(1, 100_000)
+        self._iterations_validator = QIntValidator(1, 1_000_000)
         self._depth_validator = QIntValidator(1, 6)
         self._draw_area = None
         self._main_layout = QVBoxLayout()

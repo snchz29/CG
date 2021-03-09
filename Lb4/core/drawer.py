@@ -51,11 +51,8 @@ class RecFractalGenerator:
     def get(self, depth):
         self._max_depth = depth
         self._sqs = []
-        self.rec(self._start_shape, *self._params[0])
-        self.rec(self._start_shape, *self._params[1])
-        self.rec(self._start_shape, *self._params[2])
-        self.rec(self._start_shape, *self._params[3])
-        self.rec(self._start_shape, *self._params[4])
+        for index in range(5):
+            self.rec(self._start_shape, *self._params[index])
         return list(filter(lambda x: x is not None, self._sqs))
 
     def rec(self, shape: list, theta: float = 0, dx: float = 1, dy: float = 1, cx: float = 0, cy: float = 0,
@@ -66,17 +63,11 @@ class RecFractalGenerator:
                 [(self.rot[0][0](theta) * s[0] + cx) * dx * .5 + (self.rot[0][1](theta) * s[1] + cx) * dy * .5,
                  (self.rot[1][0](theta) * s[0] + cy) * dx * .5 + (self.rot[1][1](theta) * s[1] + cy) * dy * .5])
         if depth == self._max_depth - 1:
-            self._sqs.append(self.rec(new_shape, *self._params[0], depth + 1))
-            self._sqs.append(self.rec(new_shape, *self._params[1], depth + 1))
-            self._sqs.append(self.rec(new_shape, *self._params[2], depth + 1))
-            self._sqs.append(self.rec(new_shape, *self._params[3], depth + 1))
-            self._sqs.append(self.rec(new_shape, *self._params[4], depth + 1))
+            for index in range(5):
+                self._sqs.append(self.rec(new_shape, *self._params[index], depth + 1))
         elif depth < self._max_depth:
-            self.rec(new_shape, *self._params[0], depth + 1)
-            self.rec(new_shape, *self._params[1], depth + 1)
-            self.rec(new_shape, *self._params[2], depth + 1)
-            self.rec(new_shape, *self._params[3], depth + 1)
-            self.rec(new_shape, *self._params[4], depth + 1)
+            for index in range(5):
+                self.rec(new_shape, *self._params[index], depth + 1)
         return new_shape
 
 
