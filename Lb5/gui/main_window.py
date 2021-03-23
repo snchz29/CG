@@ -1,3 +1,5 @@
+import logging
+
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 
 from Lb5.gui.control_panel import ControlPanel
