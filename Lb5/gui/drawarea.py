@@ -29,6 +29,8 @@ class ShaderRenderer:
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        # glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.size[0], image.size[1], 0, GL_RGB, GL_UNSIGNED_BYTE, img_data)
         glBindTexture(GL_TEXTURE_2D, texture_id)
         return texture_id
@@ -67,7 +69,7 @@ class ShaderRenderer:
     def _read_shader_code(self, path):
         try:
             with open(path, "r") as f:
-                shader_code = " ".join(f.readlines())
+                shader_code = f.read()
         except IOError:
             logging.info(f"Unable to load shader code for path {path}")
             raise ArgumentError(f"Cannot load shader code for path {path}")
