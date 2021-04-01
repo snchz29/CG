@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtOpenGL import QGLWidget
 
-from Lb_3.utils.core import Drawer
+from utils.core import Drawer
 
 
 class DrawArea(QGLWidget):

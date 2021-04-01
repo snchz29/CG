@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 
-from Lb_3.gui.drawarea import DrawArea
-from Lb_3.gui.panel import ControlPanel
-from Lb_3.utils.mediator import Mediator
+from gui.drawarea import DrawArea
+from gui.panel import ControlPanel
+from utils.mediator import Mediator
 
 
 class MainWindow(QWidget):

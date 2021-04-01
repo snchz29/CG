@@ -5,7 +5,7 @@ from typing import Dict, List
 
 from OpenGL.GL import *
 
-from Lb_3.utils.spline import NURBSpline3deg6points
+from utils.spline import NURBSpline3deg6points
 
 
 class Direction(Enum):
