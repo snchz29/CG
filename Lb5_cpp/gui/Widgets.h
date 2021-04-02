@@ -1,6 +1,7 @@
 #ifndef LB5_WIDGETS_H
 #define LB5_WIDGETS_H
 
+#include <iostream>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <QWidget>
@@ -45,6 +46,7 @@ protected:
 private:
     ControlPanel *controlPanel;
 
+    ShaderRenderer *shaderRenderer;
 };
 
 

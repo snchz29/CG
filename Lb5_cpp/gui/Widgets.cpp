@@ -14,6 +14,7 @@ void ControlPanel::setDrawArea(DrawArea *dArea) {
 
 DrawArea::DrawArea(ControlPanel *cPanel, QGLWidget *parent) : QGLWidget(parent),
                                                               controlPanel(cPanel) {
+    this->shaderRenderer = new ShaderRenderer();
     this->setMinimumSize(600, 480);
     this->resize(600, 480);
     this->setFocusPolicy(Qt::StrongFocus);
@@ -44,17 +45,5 @@ void DrawArea::update() {
 
 
 ShaderRenderer::ShaderRenderer(){
-    const char *vertexShaderSource = "#version 330 core\n"
-                                     "layout (location = 0) in vec3 aPos;\n"
-                                     "void main()\n"
-                                     "{\n"
-                                     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                                     "}\0";
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-    glCompileShader(vertexShader);
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
 }
