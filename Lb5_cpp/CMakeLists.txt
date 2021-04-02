@@ -18,7 +18,7 @@ set(PROJECT_SOURCES
         gui/MainWindow.cpp
         main.cpp
         )
-
-add_executable(${PROJECT_NAME}  ${PROJECT_SOURCES} ${PROJECT_HEADERS})
+add_compile_options(-lm -ldl -lGLU -lglut -lGLEW)
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS})
 qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${OPENGL_LIBRARIES} GLEW )
