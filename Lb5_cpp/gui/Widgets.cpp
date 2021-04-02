@@ -12,6 +12,12 @@ void ControlPanel::setDrawArea(DrawArea *dArea) {
     this->drawArea = dArea;
 }
 
+ControlPanel::~ControlPanel() {
+    delete this->drawArea;
+    delete this->mainLayout;
+    delete this->labelHeader;
+}
+
 DrawArea::DrawArea(ControlPanel *cPanel, QGLWidget *parent) : QGLWidget(parent),
                                                               controlPanel(cPanel) {
     this->shaderRenderer = new ShaderRenderer();
@@ -41,6 +47,11 @@ void DrawArea::resizeGL(int w, int h) {
 
 void DrawArea::update() {
     this->updateGL();
+}
+
+DrawArea::~DrawArea() {
+    delete this->controlPanel;
+    delete this->shaderRenderer;
 }
 
 

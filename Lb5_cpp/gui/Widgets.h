@@ -25,6 +25,8 @@ public:
 
     void setDrawArea(DrawArea *);
 
+    virtual ~ControlPanel();
+
 private:
     DrawArea *drawArea;
     QVBoxLayout *mainLayout;
@@ -34,6 +36,8 @@ private:
 class DrawArea : public QGLWidget {
 public:
     explicit DrawArea(ControlPanel *, QGLWidget * = nullptr);
+
+    virtual ~DrawArea();
 
     void update();
 protected:

@@ -12,3 +12,9 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     this->mainLayout->addWidget(this->controlPanel);
 
 }
+
+MainWindow::~MainWindow() {
+    delete this->mainLayout;
+    delete this->drawArea;
+    delete this->controlPanel;
+}
