@@ -25,7 +25,7 @@ public:
 
     void setDrawArea(DrawArea *);
 
-    virtual ~ControlPanel();
+    ~ControlPanel();
 
 private:
     DrawArea *drawArea;
@@ -37,7 +37,7 @@ class DrawArea : public QGLWidget {
 public:
     explicit DrawArea(ControlPanel *, QGLWidget * = nullptr);
 
-    virtual ~DrawArea();
+    ~DrawArea();
 
     void update();
 protected:

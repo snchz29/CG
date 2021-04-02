@@ -21,7 +21,7 @@ ControlPanel::~ControlPanel() {
 DrawArea::DrawArea(ControlPanel *cPanel, QGLWidget *parent) : QGLWidget(parent),
                                                               controlPanel(cPanel) {
     this->shaderRenderer = new ShaderRenderer();
-    this->setMinimumSize(600, 480);
+    this->setMinimumSize(480, 480);
     this->resize(600, 480);
     this->setFocusPolicy(Qt::StrongFocus);
 }

@@ -2,7 +2,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     this->setWindowTitle("Nechepurenko & Terekhov Ltd.");
-    this->setMinimumSize(700, 480);
+    this->setFixedSize(800, 480);
     this->mainLayout = new QHBoxLayout();
     this->setLayout(this->mainLayout);
     this->controlPanel = new ControlPanel();
@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     this->controlPanel->setDrawArea(this->drawArea);
     this->mainLayout->addWidget(this->drawArea);
     this->mainLayout->addWidget(this->controlPanel);
-
 }
 
 MainWindow::~MainWindow() {
