@@ -1,20 +1,33 @@
-import logging
+import subprocess
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QFileDialog, QPushButton, QVBoxLayout
 
-from Lb5.gui.control_panel import ControlPanel
-from Lb5.gui.drawarea import DrawArea
+script = "./main.out"
 
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Nechepurenko & Terekhov Ltd.")
-        self._main_layout = QHBoxLayout()
+        self._main_layout = QVBoxLayout()
         self.setLayout(self._main_layout)
-        self._control_panel = ControlPanel()
-        self._draw_area = DrawArea(self._control_panel)
-        self._control_panel.set_draw_area(self._draw_area)
-        self._main_layout.addWidget(self._draw_area)
-        self._main_layout.addWidget(self._control_panel)
+        self._welcoming_lbl = QLabel("Лабораторная работа №5"
+                                     "\nРасширения OpenGL, программируемый графический конвейер."
+                                     "\nШейдеры."
+                                     "\nгр.8382 Терехов А.Е, Нечепуренко Н.А.")
+        self._choose_file_lbl = QLabel("Выберите путь до изображения")
+        self._choose_file_btn = QPushButton("Выбрать...")
+        self._choose_file_btn.clicked.connect(self._choose_file_lbl_clicked)
+        self._inner_layout = QHBoxLayout()
+        self._inner_widget = QWidget()
+        self._inner_widget.setLayout(self._inner_layout)
+        self._inner_layout.addWidget(self._choose_file_lbl)
+        self._inner_layout.addWidget(self._choose_file_btn)
+        self._main_layout.addWidget(self._welcoming_lbl)
+        self._main_layout.addWidget(self._inner_widget)
         self.setMaximumSize(700, 480)
+
+    def _choose_file_lbl_clicked(self):
+        file = QFileDialog().getOpenFileName(self)
+        path = file[0]
+        subprocess.run(f"{script} {path}")
