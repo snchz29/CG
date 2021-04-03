@@ -1,5 +1,5 @@
 import subprocess
-
+import sys
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QFileDialog, QPushButton, QVBoxLayout
 
 script = "./main.out"
@@ -30,4 +30,5 @@ class MainWindow(QWidget):
     def _choose_file_lbl_clicked(self):
         file = QFileDialog().getOpenFileName(self)
         path = file[0]
-        subprocess.run(f"{script} {path}")
+        if path:
+            subprocess.call([script, path])

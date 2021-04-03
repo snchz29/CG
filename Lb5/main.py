@@ -2,7 +2,7 @@ import logging
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from Lb5.gui.main_window import MainWindow
+from gui.main_window import MainWindow
 
 
 if __name__ == '__main__':
