@@ -52,7 +52,8 @@ int main() {
     int ver = tr+2;
     float** vertices = generateVertices(ver);
     int* indices = generateIndices(tr);
-    std::cout<< "{";
+    std::cout <<"int n_triangles ="<< tr <<";\n"<<"int n_vertices = n_triangles + 2;"<<std::endl;
+    std::cout<< "float vertices[] = {";
     for (int i = 0; i < ver; ++i) {
         for (int j = 0; j < 8; ++j) {
             std::cout << std::fixed << vertices[i][j]<< "f,\t";
@@ -60,7 +61,7 @@ int main() {
         std::cout<<std::endl;
     }
     std::cout<< "};" <<std::endl;
-    std::cout<< "{";
+    std::cout<< "unsigned int indices[] = {";
 
     for (int i = 0; i < tr*3; ++i) {
         std::cout << indices[i]<< ",\t";
