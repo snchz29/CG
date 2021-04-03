@@ -19,8 +19,10 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int main() {
-    // glfw: инициализация и конфигурирование    
+int main(int argc, char** argv) {
+    if (argc < 2)
+        return 0;
+    // glfw: инициализация и конфигурирование
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -31,7 +33,7 @@ int main() {
 #endif
 
     // glfw: создание окна
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Nechepurenko & Terekhov Ltd.", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -95,7 +97,7 @@ int main() {
 
     // Загрузка изображения, создание текстуры и генерирование мипмап-уровней
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("textures/test.jpg", &width, &height, &nrChannels, STBI_rgb_alpha);
+    unsigned char *data = stbi_load(argv[1], &width, &height, &nrChannels, STBI_rgb_alpha);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -111,7 +113,7 @@ int main() {
         processInput(window);
 
         // Рендеринг
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.8f, 0.8f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Связывание текстуры
