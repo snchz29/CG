@@ -5,21 +5,20 @@ float **generateVertices(int size) {
     float delta = 2.0 / (size - 2);
     float x_pos = 0.5;
     float y_pos = -0.5;
+    float z_pos = 0.5;
     float x_tex = 1.0;
     float y_tex = 1.0;
     float **arr = new float *[size];
     for (int i = 0; i < size; ++i) {
-        arr[i] = new float[8];
+        arr[i] = new float[5];
         arr[i][0] = x_pos;
         arr[i][1] = y_pos;
         arr[i][2] = 0;
-        arr[i][3] = 1;
-        arr[i][4] = 1;
-        arr[i][5] = 1;
-        arr[i][6] = x_tex;
-        arr[i][7] = y_tex;
+        arr[i][3] = x_tex;
+        arr[i][4] = y_tex;
         x_pos -= delta * (i % 2);
         y_pos = -y_pos;
+        z_pos = -z_pos;
         x_tex -= delta * (i % 2);
         y_tex = std::abs(y_tex - 1);
     }
@@ -55,7 +54,7 @@ int main() {
     std::cout <<"int n_triangles ="<< tr <<";\n"<<"int n_vertices = n_triangles + 2;"<<std::endl;
     std::cout<< "float vertices[] = {";
     for (int i = 0; i < ver; ++i) {
-        for (int j = 0; j < 8; ++j) {
+        for (int j = 0; j < 5; ++j) {
             std::cout << std::fixed << vertices[i][j]<< "f,\t";
         }
         std::cout<<std::endl;
