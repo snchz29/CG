@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from OpenGL.GL import *
 
-from utils.matrix import perspective, lookat, identity
+from utils.matrix import lookat, identity, ortho
 
 
 def get_file_content(path):
@@ -60,6 +60,21 @@ class ShadersHandler:
         return self._shaders_program
 
 
+def get_pts():
+    pts = []
+    a1 = 1.5e-1
+    a2 = 2.e-1
+    a3 = 2.5e-1
+    omc = 500
+    etc = 500
+    omega = np.linspace(-np.pi, np.pi, omc)
+    eta = np.linspace(-np.pi / 2, np.pi / 2, etc)
+    x = a1 * np.cos(eta) * np.cos(omega)
+    y = a2 * np.cos(eta) * np.sin(omega)
+    z = a3 * np.sin(eta)
+    return [y for x in zip(x, y, z) for y in x]
+
+
 class Drawer:
     def __init__(self, shaders_handler):
         self._pts = [[-0.5, -0.5, 0.], [.5, .5, 0.]]
@@ -70,25 +85,28 @@ class Drawer:
         self._vert_index = glGetAttribLocation(self._shaders_program_id, "aVert")
 
     def draw(self):
-        s = 0.2
-        quadV = [
-            -s, s, 0.0,
-            -s, -s, 0.0,
-            s, s, 0.0,
-            s, s, 0.0,
-            -s, -s, 0.0,
-            s, -s, 0.0
-        ]
+        # s = 0.2
+        # quadV = [
+        #     -s, s, 0.0,
+        #     -s, -s, 0.0,
+        #     s, s, 0.0,
+        #     s, s, 0.0,
+        #     -s, -s, 0.0,
+        #     s, -s, 0.0
+        # ]
+        pts = get_pts()
+        np.random.shuffle(pts)
+        print(pts)
         # vertices
         vertex_buffer = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
-        vertex_data = np.array(quadV, np.float32)
+        vertex_data = np.array(pts, np.float32)
         glBufferData(GL_ARRAY_BUFFER, 4 * len(vertex_data), vertex_data,
                      GL_STATIC_DRAW)
         glUseProgram(self._shaders_program_id)
-        proj_matrix = perspective(56.25, 16.0 / 9.0, 0.1, 100.0)
+        proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
         glUniformMatrix4fv(self._proj_matrix_id, 1, GL_FALSE, proj_matrix)
-        view_matrix = lookat(np.array([5, 5, 5]), np.array([0, 0, 0]), np.array([0, 0, 1]))
+        view_matrix = lookat(np.array([0, 1, 1]), np.array([0, 0, 0]), np.array([0, 1, 0]))
         glUniformMatrix4fv(self._view_matrix_id, 1, GL_FALSE, view_matrix)
         model_matrix = identity(4)
         glUniformMatrix4fv(self._model_matrix_id, 1, GL_FALSE, model_matrix)
@@ -100,7 +118,7 @@ class Drawer:
         glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
 
         # draw
-        glDrawArrays(GL_TRIANGLES, 0, 6)
+        glDrawArrays(GL_TRIANGLES, 0, len(pts))
 
         # disable arrays
         glDisableVertexAttribArray(self._vert_index)
