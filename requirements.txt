@@ -1,0 +1,5 @@
+pyqt5~=5.15.3
+PyOpenGL
+PyOpenGL_accelerate
+
+numpy~=1.20.1
