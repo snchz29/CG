@@ -4,6 +4,7 @@ import numpy as np
 from OpenGL.GL import *
 
 from utils.matrix import lookat, identity, ortho
+from utils.ellipsoid import get_pts, get_indices
 
 
 def get_file_content(path):
@@ -58,21 +59,6 @@ class ShadersHandler:
 
     def get_program(self):
         return self._shaders_program
-
-
-def get_pts():
-    pts = []
-    a1 = 1.5e-1
-    a2 = 2.e-1
-    a3 = 2.5e-1
-    omc = 500
-    etc = 500
-    omega = np.linspace(-np.pi, np.pi, omc)
-    eta = np.linspace(-np.pi / 2, np.pi / 2, etc)
-    x = a1 * np.cos(eta) * np.cos(omega)
-    y = a2 * np.cos(eta) * np.sin(omega)
-    z = a3 * np.sin(eta)
-    return [y for x in zip(x, y, z) for y in x]
 
 
 class Drawer:
