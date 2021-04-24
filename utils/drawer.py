@@ -71,9 +71,10 @@ class Drawer:
         self._vert_index = glGetAttribLocation(self._shaders_program_id, "aVert")
 
     def draw(self):
-        pts = get_pts(100)
-        print("pts len", len(pts))
-        idxs = get_indices(len(pts))
+        n_in_row = 10
+        pts = get_pts(n_in_row)
+        # print("pts len", len(pts))
+        idxs = get_indices(n_in_row)
         print(idxs)
         print("idx len ", len(idxs))
         # glBegin(GL_TRIANGLES)
@@ -103,7 +104,7 @@ class Drawer:
 
         # draw
         #glDrawArrays(GL_TRIANGLES, 0, len(pts))
-        glDrawElements(GL_TRIANGLES, len(idxs), GL_UNSIGNED_SHORT, idxs)
+        glDrawElements(GL_POLYGON, len(idxs), GL_UNSIGNED_SHORT, idxs)
 
         # disable arrays
         glDisableVertexAttribArray(self._vert_index)
