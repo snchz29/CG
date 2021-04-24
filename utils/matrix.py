@@ -122,8 +122,8 @@ def lookat(eye, target, up):
     return M * T
 
 
-def identity(n):
-    return np.matrix(np.identity(n))
+def identity(n, scale=1):
+    return np.matrix(np.identity(n))*scale
 
 
 def viewport(x, y, w, h):

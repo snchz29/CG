@@ -71,18 +71,16 @@ class Drawer:
         self._vert_index = glGetAttribLocation(self._shaders_program_id, "aVert")
 
     def draw(self):
-        # s = 0.2
-        # quadV = [
-        #     -s, s, 0.0,
-        #     -s, -s, 0.0,
-        #     s, s, 0.0,
-        #     s, s, 0.0,
-        #     -s, -s, 0.0,
-        #     s, -s, 0.0
-        # ]
-        pts = get_pts()
-        np.random.shuffle(pts)
-        print(pts)
+        pts = get_pts(100)
+        print("pts len", len(pts))
+        idxs = get_indices(len(pts))
+        print(idxs)
+        print("idx len ", len(idxs))
+        # glBegin(GL_TRIANGLES)
+        # glColor3f(0., 1., 0.)
+        # for idx in idxs:
+        #     glVertex3f(pts[3*idx], pts[3*idx + 1], pts[3*idx + 2])
+        # glEnd()
         # vertices
         vertex_buffer = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
@@ -104,7 +102,8 @@ class Drawer:
         glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
 
         # draw
-        glDrawArrays(GL_TRIANGLES, 0, len(pts))
+        #glDrawArrays(GL_TRIANGLES, 0, len(pts))
+        glDrawElements(GL_TRIANGLES, len(idxs), GL_UNSIGNED_SHORT, idxs)
 
         # disable arrays
         glDisableVertexAttribArray(self._vert_index)
