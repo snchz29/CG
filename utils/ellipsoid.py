@@ -13,15 +13,13 @@ def get_raw_pts(n_in_row: int) -> np.ndarray:
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
     indices = get_indices(n_in_row)
     result = result[indices]
-    print(result)
-    result = result[result[:, 1] < 0.1]
     return result
 
 
 def get_pts_in_octant(n_in_row: int) -> np.ndarray:
-    a1 = 1e-1
+    a1 = 9e-1
     a2 = 9e-1
-    a3 = 2e-1
+    a3 = 9e-1
     u = np.linspace(0, np.pi / 2, n_in_row)
     v = np.linspace(0, np.pi / 2, n_in_row)
     x = a1 * np.outer(np.cos(u), np.sin(v))
@@ -41,7 +39,8 @@ def get_pts(n_in_row: int) -> np.ndarray:
     pts = get_raw_pts(n_in_row)
     pts = pts.reshape((pts.shape[0] * pts.shape[1] // 9, 3, 3))
     pts = add_normals(pts)
-    return pts.reshape(pts.shape[0] * pts.shape[1])
+    pts = pts[pts[:, 2] < pts[50, 2]-0.01]
+    return pts[:, :3].reshape(pts.shape[0] * 3)
 
 
 def add_normals(triangles: np.ndarray) -> np.ndarray:

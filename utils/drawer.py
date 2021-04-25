@@ -78,7 +78,7 @@ class Drawer:
         self._draw_ellipsoid()
 
     def _draw_ellipsoid(self):
-        points_amount_in_a_row = 25
+        points_amount_in_a_row = 8
         ellipsoid_points = get_pts(points_amount_in_a_row)
 
         vertex_buffer = glGenBuffers(1)
