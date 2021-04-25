@@ -1,21 +1,17 @@
-from typing import List, Tuple
+from typing import Tuple
 
 import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 
 
 def get_pts(n_in_row: int) -> np.ndarray:
     assert n_in_row > 6
     result = get_pts_in_octant((1, 1, 1), n_in_row)
-    result = np.append(result, get_pts_in_octant((1, 1, -1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((1, -1, 1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((1, -1, -1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((-1, 1, 1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((-1, 1, -1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((-1, -1, 1), n_in_row), 0)
-    result = np.append(result, get_pts_in_octant((-1, -1, -1), n_in_row), 0)
-    return result
+    result = np.append(result, result.dot(np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])), 0)
+    result = np.append(result, result.dot(np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])), 0)
+    result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
+    shape = result.shape
+    return result.reshape(shape[0] * shape[1])
 
 
 def get_pts_in_octant(octant: Tuple[int], n_in_row: int) -> np.ndarray:
@@ -37,8 +33,7 @@ def get_pts_in_octant(octant: Tuple[int], n_in_row: int) -> np.ndarray:
     res[:, 0] = res[:, 0] * octant[0]
     res[:, 1] = res[:, 1] * octant[1]
     res[:, 2] = res[:, 2] * octant[2]
-    shape = res.shape
-    return res.reshape(shape[0] * shape[1])
+    return res
 
 
 def get_indices(n_in_row: int) -> np.ndarray:
@@ -57,7 +52,7 @@ def get_indices(n_in_row: int) -> np.ndarray:
     indices = np.array(indices)
     octant_increment = indices.max()
     for i in range(8):
-        indices = np.append(indices, indices + octant_increment+1)
+        indices = np.append(indices, indices + octant_increment + 1)
         octant_increment = indices.max()
     return indices
 

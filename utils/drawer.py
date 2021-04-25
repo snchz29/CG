@@ -3,8 +3,8 @@ import logging
 import numpy as np
 from OpenGL.GL import *
 
-from utils.matrix import lookat, identity, ortho
 from utils.ellipsoid import get_pts, get_indices
+from utils.matrix import lookat, identity, ortho
 
 
 def get_file_content(path):
@@ -69,42 +69,73 @@ class Drawer:
         self._view_matrix_id = glGetUniformLocation(self._shaders_program_id, "viewMat")
         self._proj_matrix_id = glGetUniformLocation(self._shaders_program_id, "projMat")
         self._vert_index = glGetAttribLocation(self._shaders_program_id, "aVert")
+        self._camera_pos = np.array([0., 0., 0.])
+        self._camera_front = np.array([0., 0., -1.])
+        self._camera_up = np.array([0., 1., 0.])
 
     def draw(self):
-        n_in_row = 10
-        pts = get_pts(n_in_row)
-        # print("pts len", len(pts))
-        idxs = get_indices(n_in_row)
-        print(idxs)
-        print("idx len ", len(idxs))
-        # glBegin(GL_TRIANGLES)
-        # glColor3f(0., 1., 0.)
-        # for idx in idxs:
-        #     glVertex3f(pts[3*idx], pts[3*idx + 1], pts[3*idx + 2])
-        # glEnd()
-        # vertices
+        self._draw_axis()
+        self._draw_ellipsoid()
+
+    def _draw_ellipsoid(self):
+        points_amount_in_a_row = 10
+        ellipsoid_points = get_pts(points_amount_in_a_row)
+        ellipsoid_triangle_mesh_idx_array = get_indices(points_amount_in_a_row)
+
         vertex_buffer = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
-        vertex_data = np.array(pts, np.float32)
+        vertex_data = np.array(ellipsoid_points, np.float32)
         glBufferData(GL_ARRAY_BUFFER, 4 * len(vertex_data), vertex_data,
                      GL_STATIC_DRAW)
         glUseProgram(self._shaders_program_id)
+        self._set_matrices()
+        glEnableVertexAttribArray(self._vert_index)
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
+        glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
+
+        glDrawElements(GL_POLYGON, len(ellipsoid_triangle_mesh_idx_array),
+                       GL_UNSIGNED_SHORT, ellipsoid_triangle_mesh_idx_array)
+
+        glDisableVertexAttribArray(self._vert_index)
+        glUseProgram(0)
+
+    def _set_matrices(self):
         proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
         glUniformMatrix4fv(self._proj_matrix_id, 1, GL_FALSE, proj_matrix)
-        view_matrix = lookat(np.array([0, 1, 1]), np.array([0, 0, 0]), np.array([0, 1, 0]))
+        view_matrix = lookat(self._camera_pos,
+                             self._camera_pos - self._camera_front, self._camera_up)
         glUniformMatrix4fv(self._view_matrix_id, 1, GL_FALSE, view_matrix)
         model_matrix = identity(4)
         glUniformMatrix4fv(self._model_matrix_id, 1, GL_FALSE, model_matrix)
 
-        glEnableVertexAttribArray(self._vert_index)
+    def _draw_axis(self):
+        glUseProgram(self._shaders_program_id)
+        glBegin(GL_LINES)
 
-        # set buffers
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
-        glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
+        glColor3f(1.0, 1.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(2.0, 0.0, 0.0)
 
-        # draw
-        #glDrawArrays(GL_TRIANGLES, 0, len(pts))
-        glDrawElements(GL_POLYGON, len(idxs), GL_UNSIGNED_SHORT, idxs)
+        glColor3f(1.0, 1.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, 2.0, 0.0)
 
-        # disable arrays
-        glDisableVertexAttribArray(self._vert_index)
+        glColor3f(1.0, 1.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, 2.0)
+        glEnd()
+        glUseProgram(0)
+
+    def handle_key(self, key):
+        logging.info(key)
+        camera_speed = 0.1
+        if key == 87:
+            self._camera_pos += camera_speed * self._camera_front
+        if key == 83:
+            self._camera_pos -= camera_speed * self._camera_front
+        if key == 65:
+            self._camera_pos -= np.cross(self._camera_front, self._camera_up)
+        if key == 68:
+            self._camera_pos += np.cross(self._camera_front, self._camera_up)
+

@@ -16,6 +16,7 @@ class DrawArea(QGLWidget):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
 
     def paintGL(self):
+        glClearColor(0.2980, 0.5843, 0.7098, 1.)
         glClear(GL_COLOR_BUFFER_BIT)
         self._drawer.draw()
 
@@ -33,6 +34,8 @@ class DrawArea(QGLWidget):
         return self._drawer
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
+        self._drawer.handle_key(event.key())
+        self.paintGL()
         self.updateGL()
 
     def update(self):
