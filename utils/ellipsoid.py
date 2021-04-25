@@ -7,19 +7,21 @@ import numpy as np
 
 def get_raw_pts(n_in_row: int) -> np.ndarray:
     assert n_in_row > 6
-    result = get_pts_in_octant((1, 1, 1), n_in_row)
+    result = get_pts_in_octant(n_in_row)
     result = np.append(result, result.dot(np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
     indices = get_indices(n_in_row)
     result = result[indices]
+    print(result)
+    result = result[result[:, 1] < 0.1]
     return result
 
 
-def get_pts_in_octant(octant: Tuple[int], n_in_row: int) -> np.ndarray:
-    a1 = 5e-1
-    a2 = 5e-1
-    a3 = 5e-1
+def get_pts_in_octant(n_in_row: int) -> np.ndarray:
+    a1 = 1e-1
+    a2 = 9e-1
+    a3 = 2e-1
     u = np.linspace(0, np.pi / 2, n_in_row)
     v = np.linspace(0, np.pi / 2, n_in_row)
     x = a1 * np.outer(np.cos(u), np.sin(v))
@@ -29,12 +31,9 @@ def get_pts_in_octant(octant: Tuple[int], n_in_row: int) -> np.ndarray:
     y = y.reshape(n_in_row ** 2)
     z = z.reshape(n_in_row ** 2)
     res = np.array(list(zip(x, y, z)))
+    res = np.unique(res.round(decimals=5), axis=0)
     sort_ind = np.lexsort((res[:, 0], res[:, 1], -res[:, 2]))
     res = res[sort_ind]
-    res[:, 0] = res[:, 0] * octant[0]
-    res[:, 1] = res[:, 1] * octant[1]
-    res[:, 2] = res[:, 2] * octant[2]
-    print(res)
     return res
 
 
@@ -62,7 +61,7 @@ def add_normals(triangles: np.ndarray) -> np.ndarray:
 
 
 def normalize(vectors: np.array)->np.array:
-    eps = 1e-4
+    eps = 1e-10
     for i, vec in enumerate(vectors):
         vectors[i] = vec/(np.linalg.norm(vec)+eps)
     return vectors
@@ -91,22 +90,22 @@ if __name__ == '__main__':
     n_in_row = 7
 
     pts = get_pts(n_in_row)
-    print(pts.reshape((pts.shape[0] // 6, 6))[0:20, 0:3])
+    print(pts.reshape((pts.shape[0] // 6, 6))[0:20])
     pts = pts.reshape((pts.shape[0] // 6, 6))[:,  0:3]
-    pts = pts.reshape((np.prod(pts.shape)))
+    pts = pts.reshape((np.prod(pts.shape)))[0:100]
     # print(get_indices(n_in_row).reshape((50688//3,3))[0:150])
 
     # print(pts.shape)
     # for i in range(0, len(pts), 3):
     #     print(f"{round(pts[i], 2):5} {round(pts[i + 1], 2): 5} {round(pts[i + 2], 2): 5}")
-    fig = plt.figure()
-    ax = plt.axes(projection='3d')
-    stop_ind = len(pts) // 3
-    # ax.scatter(pts[0:stop_ind * 3:3], pts[1:stop_ind * 3:3], pts[2:stop_ind * 3:3], 'b')
-    for i in range(0, stop_ind * 3, 3):  # plot each point + it's index as text above
-        ax.scatter(pts[i], pts[i + 1], pts[i + 2], color='b')
-        ax.text(pts[i + 0], pts[i + 1], pts[i + 2], '%s' % (str(i // 3)), size=10, zorder=1,
-                color='k')
-        # if i % 2 == 0:
-        #     ax.plot([pts[i], pts[i+3]], [pts[i + 1], pts[i + 4]], [pts[i + 2], pts[i + 5]])
-    plt.show()
+    # fig = plt.figure()
+    # ax = plt.axes(projection='3d')
+    # stop_ind = len(pts) // 3
+    # # ax.scatter(pts[0:stop_ind * 3:3], pts[1:stop_ind * 3:3], pts[2:stop_ind * 3:3], 'b')
+    # for i in range(0, stop_ind * 3, 3):  # plot each point + it's index as text above
+    #     ax.scatter(pts[i], pts[i + 1], pts[i + 2], color='b')
+    #     ax.text(pts[i + 0], pts[i + 1], pts[i + 2], '%s' % (str(i // 3)), size=10, zorder=1,
+    #             color='k')
+    #     # if i % 2 == 0:
+    #     #     ax.plot([pts[i], pts[i+3]], [pts[i + 1], pts[i + 4]], [pts[i + 2], pts[i + 5]])
+    # plt.show()
