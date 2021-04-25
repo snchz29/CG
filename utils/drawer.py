@@ -78,9 +78,8 @@ class Drawer:
         self._draw_ellipsoid()
 
     def _draw_ellipsoid(self):
-        points_amount_in_a_row = 10
+        points_amount_in_a_row = 25
         ellipsoid_points = get_pts(points_amount_in_a_row)
-        ellipsoid_triangle_mesh_idx_array = get_indices(points_amount_in_a_row)
 
         vertex_buffer = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
@@ -94,8 +93,7 @@ class Drawer:
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
         glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
 
-        glDrawElements(GL_POLYGON, len(ellipsoid_triangle_mesh_idx_array),
-                       GL_UNSIGNED_SHORT, ellipsoid_triangle_mesh_idx_array)
+        glDrawArrays(GL_TRIANGLES, 0, len(vertex_data))
 
         glDisableVertexAttribArray(self._vert_index)
         glUseProgram(0)

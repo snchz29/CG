@@ -8,7 +8,9 @@ attribute vec3 aVert;
 
 void main()
 {
+    //if (aVert.x < 0.3){
     gl_Position = projMat * viewMat * modelMat * vec4(aVert, 1.0);
     //gl_Position = viewMat * modelMat * vec4(aVert, 1.0);
     //gl_Position = modelMat * vec4(aVert, 1.0);
+    //}
 }

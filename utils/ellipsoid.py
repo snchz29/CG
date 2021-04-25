@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -10,6 +11,8 @@ def get_pts(n_in_row: int) -> np.ndarray:
     result = np.append(result, result.dot(np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
+    indices = get_indices(n_in_row)
+    result = result[indices]
     shape = result.shape
     return result.reshape(shape[0] * shape[1])
 
@@ -27,13 +30,12 @@ def get_pts_in_octant(octant: Tuple[int], n_in_row: int) -> np.ndarray:
     y = y.reshape(n_in_row ** 2)
     z = z.reshape(n_in_row ** 2)
     res = np.array(list(zip(x, y, z)))
-    res = np.unique(res.round(decimals=2), axis=0)
     sort_ind = np.lexsort((res[:, 0], res[:, 1], -res[:, 2]))
     res = res[sort_ind]
     res[:, 0] = res[:, 0] * octant[0]
     res[:, 1] = res[:, 1] * octant[1]
     res[:, 2] = res[:, 2] * octant[2]
-    return res
+    return res.round(decimals=3)
 
 
 def get_indices(n_in_row: int) -> np.ndarray:
@@ -43,15 +45,12 @@ def get_indices(n_in_row: int) -> np.ndarray:
         indices.append(i)
         indices.append(i + 1)
     for i in range(1, n_in_row - 1):
-        indices.extend([(i - 1) * n_in_row + 1, i * n_in_row + 1, i * n_in_row + 2])
-        for j in range(2, n_in_row):
-            indices.extend([(i - 1) * n_in_row + j, i * n_in_row + j - 1, i * n_in_row + j])
-            if j > 1:
-                indices.extend([(i - 1) * n_in_row + j, i * n_in_row + j, i * n_in_row + j + 1])
-        indices.extend([(i - 1) * n_in_row + n_in_row, i * n_in_row + n_in_row - 1, i * n_in_row + n_in_row])
+        for j in range(1, n_in_row):
+            indices.extend([(i - 1) * n_in_row + j, i * n_in_row + j, i * n_in_row + j + 1])
+            indices.extend([(i - 1) * n_in_row + j,  i * n_in_row + j + 1, (i - 1) * n_in_row + j + 1])
     indices = np.array(indices)
     octant_increment = indices.max()
-    for i in range(8):
+    for i in range(3):
         indices = np.append(indices, indices + octant_increment + 1)
         octant_increment = indices.max()
     return indices
@@ -59,11 +58,14 @@ def get_indices(n_in_row: int) -> np.ndarray:
 
 if __name__ == '__main__':
     matplotlib.use('Qt5Agg')
-    n_in_row = 7
-    pts = get_pts(n_in_row)
-    print(get_indices(n_in_row)[0:400])
+    n_in_row = 12
 
-    # print(pts)
+
+    pts = get_pts(n_in_row)
+    ids = get_indices(n_in_row)
+    # print(get_indices(n_in_row).reshape((50688//3,3))[0:150])
+
+    print(pts)
     # for i in range(0, len(pts), 3):
     #     print(f"{round(pts[i], 2):5} {round(pts[i + 1], 2): 5} {round(pts[i + 2], 2): 5}")
     # fig = plt.figure()
