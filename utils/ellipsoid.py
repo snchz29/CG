@@ -1,7 +1,4 @@
-from typing import Tuple
-
 import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -39,7 +36,7 @@ def get_pts(n_in_row: int) -> np.ndarray:
     pts = get_raw_pts(n_in_row)
     pts = pts.reshape((pts.shape[0] * pts.shape[1] // 9, 3, 3))
     pts = add_normals(pts)
-    pts = pts[pts[:, 2] < 0.7]
+    pts = pts[pts[:, 2] < 0.5]
     return pts.reshape(pts.shape[0] * pts.shape[1])
 
 
@@ -51,26 +48,20 @@ def add_normals(triangles: np.ndarray) -> np.ndarray:
         c = triangle[2]
         x = b - a
         y = c - a
-        if a[0]*a[1]*a[2] == 0 \
-                and b[0]*b[1]*b[2] == 0 \
-                and c[0]*c[1]*c[2] == 0:
-            for _ in range(3):
-                result.append(-np.cross(x, y))
-        elif a[0]*a[1]*a[2]>=0 and c[0]*c[1]*c[2] >= 0:
-            for _ in range(3):
-                result.append(np.cross(x, y))
-        else:
-            for _ in range(3):
-                result.append(-np.cross(x, y))
+        # if a[0] * a[1] * a[2] >= 0 and c[0] * c[1] * c[2] >= 0:
+        #     for _ in range(3):
+        #         result.append(np.cross(x, y))
+        # else:
+        for _ in range(3):
+            result.append(np.cross(x, y))
     result = normalize(np.array(result))
     triangles = triangles.reshape((triangles.shape[0] * triangles.shape[1], triangles.shape[2]))
     return np.append(triangles, result, 1)
 
 
 def normalize(vectors: np.array) -> np.array:
-    eps = 1e-10
     for i, vec in enumerate(vectors):
-        vectors[i] = vec/(np.linalg.norm(vec)+eps)
+        vectors[i] = vec / abs(np.linalg.norm(vec))
     return vectors
 
 
@@ -86,8 +77,9 @@ def get_indices(n_in_row: int) -> np.ndarray:
             indices.extend([(i - 1) * n_in_row + j, i * n_in_row + j + 1, (i - 1) * n_in_row + j + 1])
     indices = np.array(indices)
     octant_increment = indices.max()
+    res_indices = indices.copy()
     for i in range(3):
-        indices = np.append(indices, indices + octant_increment + 1)
+        indices = np.append(indices, np.flip(indices, 0) + octant_increment + 1)
         octant_increment = indices.max()
     return indices
 
@@ -98,7 +90,7 @@ if __name__ == '__main__':
 
     pts = get_pts(n_in_row)
     print(pts.reshape((pts.shape[0] // 6, 6))[0:20])
-    pts = pts.reshape((pts.shape[0] // 6, 6))[:,  0:3]
+    pts = pts.reshape((pts.shape[0] // 6, 6))[:, 0:3]
     pts = pts.reshape((np.prod(pts.shape)))[0:100]
     # print(get_indices(n_in_row).reshape((50688//3,3))[0:150])
 

@@ -10,7 +10,7 @@ void main()
 {
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec3 objectColor = vec3(0.0, 1.0, 0.0);
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.15;
     vec3 ambient = ambientStrength * lightColor;
     vec4 lightPosTm = modelMat * vec4(-5.0, -5.0, -5.0, 1.0);
     vec3 lightPosTmp = vec3(lightPosTm.x, lightPosTm.y, lightPosTm.z);
