@@ -45,13 +45,18 @@ def get_pts(n_in_row: int) -> np.ndarray:
 
 def add_normals(triangles: np.ndarray) -> np.ndarray:
     result = []
-    for triangle in triangles:
+    for idx, triangle in enumerate(triangles):
         a = triangle[0]
         b = triangle[1]
         c = triangle[2]
         x = b - a
         y = c - a
-        if triangle[0][0]*triangle[0][1]*triangle[0][2]>=0 and triangle[2][0]*triangle[2][1]*triangle[2][2] >= 0:
+        if a[0]*a[1]*a[2] == 0 \
+                and b[0]*b[1]*b[2] == 0 \
+                and c[0]*c[1]*c[2] == 0:
+            for _ in range(3):
+                result.append(-np.cross(x, y))
+        elif a[0]*a[1]*a[2]>=0 and c[0]*c[1]*c[2] >= 0:
             for _ in range(3):
                 result.append(np.cross(x, y))
         else:

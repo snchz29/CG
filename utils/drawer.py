@@ -117,7 +117,7 @@ class Drawer:
         glUniformMatrix4fv(self._model_matrix_id, 1, GL_FALSE, model_matrix)
 
     def _draw_axis(self):
-        glUseProgram(self._shaders_program_id)
+        #glUseProgram(self._shaders_program_id)
         glBegin(GL_LINES)
 
         glColor3f(1.0, 1.0, 0.0)
