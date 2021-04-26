@@ -47,10 +47,6 @@ def add_normals(triangles: np.ndarray) -> np.ndarray:
         c = triangle[2]
         x = b - a
         y = c - a
-        # if a[0] * a[1] * a[2] >= 0 and c[0] * c[1] * c[2] >= 0:
-        #     for _ in range(3):
-        #         result.append(np.cross(x, y))
-        # else:
         for _ in range(3):
             result.append(np.cross(x, y))
     result = normalize(np.array(result))
@@ -76,7 +72,6 @@ def get_indices(n_in_row: int) -> np.ndarray:
             indices.extend([(i - 1) * n_in_row + j, i * n_in_row + j + 1, (i - 1) * n_in_row + j + 1])
     indices = np.array(indices)
     octant_increment = indices.max()
-    res_indices = indices.copy()
     for i in range(3):
         indices = np.append(indices, np.flip(indices, 0) + octant_increment + 1)
         octant_increment = indices.max()
