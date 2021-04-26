@@ -51,9 +51,12 @@ def add_normals(triangles: np.ndarray) -> np.ndarray:
         c = triangle[2]
         x = b - a
         y = c - a
-        result.append(np.cross(x, y))
-        result.append(np.cross(x, y))
-        result.append(np.cross(x, y))
+        if triangle[0][0]*triangle[0][1]*triangle[0][2]>=0 and triangle[2][0]*triangle[2][1]*triangle[2][2] >= 0:
+            for _ in range(3):
+                result.append(np.cross(x, y))
+        else:
+            for _ in range(3):
+                result.append(-np.cross(x, y))
     result = normalize(np.array(result))
     triangles = triangles.reshape((triangles.shape[0] * triangles.shape[1], triangles.shape[2]))
     return np.append(triangles, result, 1)

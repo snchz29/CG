@@ -14,5 +14,6 @@ void main()
 {
     FragPos = vec3(modelMat * vec4(vec3(position.x, position.z, position.y), 1.0));
     Normal = vec3(normal.x, normal.z, normal.y);
+    //gl_Position = projMat * viewMat * modelMat * vec4(vec3(position.x, position.z, position.y), 1.0);
     gl_Position = projMat * viewMat * modelMat * vec4(vec3(position.x, position.z, position.y), 1.0);
 }

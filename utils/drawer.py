@@ -5,7 +5,7 @@ import numpy as np
 from OpenGL.GL import *
 
 from utils.ellipsoid import get_pts, get_indices
-from utils.matrix import lookat, identity, ortho
+from utils.matrix import lookat, identity, ortho, rotz, roty
 
 
 def get_file_content(path):
@@ -73,6 +73,8 @@ class Drawer:
         self._camera_pos = np.array([0., 0., 0.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
+        self._phi = 0
+        self._psi = 0
 
     def draw(self):
         self._draw_axis()
@@ -111,6 +113,7 @@ class Drawer:
                              self._camera_pos - self._camera_front, self._camera_up)
         glUniformMatrix4fv(self._view_matrix_id, 1, GL_FALSE, view_matrix)
         model_matrix = identity(4)
+        model_matrix = rotz(self._phi).dot(roty(self._psi))
         glUniformMatrix4fv(self._model_matrix_id, 1, GL_FALSE, model_matrix)
 
     def _draw_axis(self):
@@ -142,4 +145,11 @@ class Drawer:
             self._camera_pos -= 8e-2*np.cross(self._camera_front, self._camera_up)
         if key == 68:
             self._camera_pos += 8e-2*np.cross(self._camera_front, self._camera_up)
-
+        if key == 16777234: #AL
+            self._psi += 5
+        if key == 16777236: #AR
+            self._psi -= 5
+        if key == 16777235:
+            self._phi -= 5
+        if key == 16777237:
+            self._phi += 5
