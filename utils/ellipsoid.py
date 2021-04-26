@@ -39,8 +39,8 @@ def get_pts(n_in_row: int) -> np.ndarray:
     pts = get_raw_pts(n_in_row)
     pts = pts.reshape((pts.shape[0] * pts.shape[1] // 9, 3, 3))
     pts = add_normals(pts)
-    pts = pts[pts[:, 2] < pts[50, 2]-0.01]
-    return pts[:, :3].reshape(pts.shape[0] * 3)
+    pts = pts[pts[:, 2] < 0.7]
+    return pts.reshape(pts.shape[0] * pts.shape[1])
 
 
 def add_normals(triangles: np.ndarray) -> np.ndarray:
@@ -59,7 +59,7 @@ def add_normals(triangles: np.ndarray) -> np.ndarray:
     return np.append(triangles, result, 1)
 
 
-def normalize(vectors: np.array)->np.array:
+def normalize(vectors: np.array) -> np.array:
     eps = 1e-10
     for i, vec in enumerate(vectors):
         vectors[i] = vec/(np.linalg.norm(vec)+eps)

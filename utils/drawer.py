@@ -1,3 +1,4 @@
+import ctypes
 import logging
 
 import numpy as np
@@ -68,7 +69,7 @@ class Drawer:
         self._model_matrix_id = glGetUniformLocation(self._shaders_program_id, "modelMat")
         self._view_matrix_id = glGetUniformLocation(self._shaders_program_id, "viewMat")
         self._proj_matrix_id = glGetUniformLocation(self._shaders_program_id, "projMat")
-        self._vert_index = glGetAttribLocation(self._shaders_program_id, "aVert")
+        self._light_pos_id = glGetUniformLocation(self._shaders_program_id, "lightPos")
         self._camera_pos = np.array([0., 0., 0.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
@@ -88,17 +89,22 @@ class Drawer:
                      GL_STATIC_DRAW)
         glUseProgram(self._shaders_program_id)
         self._set_matrices()
-        glEnableVertexAttribArray(self._vert_index)
 
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
-        glVertexAttribPointer(self._vert_index, 3, GL_FLOAT, GL_FALSE, 0, None)
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(0)
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(12))
+        glEnableVertexAttribArray(1)
 
         glDrawArrays(GL_TRIANGLES, 0, len(vertex_data))
 
-        glDisableVertexAttribArray(self._vert_index)
+        glDisableVertexAttribArray(0)
+        glDisableVertexAttribArray(1)
         glUseProgram(0)
 
     def _set_matrices(self):
+        light_pos = np.array([0., 0., 0.])
+        glUniform3fv(self._light_pos_id, 1, GL_FALSE, light_pos)
         proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
         glUniformMatrix4fv(self._proj_matrix_id, 1, GL_FALSE, proj_matrix)
         view_matrix = lookat(self._camera_pos,
@@ -133,7 +139,7 @@ class Drawer:
         if key == 83:
             self._camera_pos -= camera_speed * self._camera_front
         if key == 65:
-            self._camera_pos -= np.cross(self._camera_front, self._camera_up)
+            self._camera_pos -= 8e-2*np.cross(self._camera_front, self._camera_up)
         if key == 68:
-            self._camera_pos += np.cross(self._camera_front, self._camera_up)
+            self._camera_pos += 8e-2*np.cross(self._camera_front, self._camera_up)
 
