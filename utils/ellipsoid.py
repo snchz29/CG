@@ -1,4 +1,3 @@
-import matplotlib
 import numpy as np
 
 
@@ -82,29 +81,3 @@ def get_indices(n_in_row: int) -> np.ndarray:
         indices = np.append(indices, np.flip(indices, 0) + octant_increment + 1)
         octant_increment = indices.max()
     return indices
-
-
-if __name__ == '__main__':
-    matplotlib.use('Qt5Agg')
-    n_in_row = 7
-
-    pts = get_pts(n_in_row)
-    print(pts.reshape((pts.shape[0] // 6, 6))[0:20])
-    pts = pts.reshape((pts.shape[0] // 6, 6))[:, 0:3]
-    pts = pts.reshape((np.prod(pts.shape)))[0:100]
-    # print(get_indices(n_in_row).reshape((50688//3,3))[0:150])
-
-    # print(pts.shape)
-    # for i in range(0, len(pts), 3):
-    #     print(f"{round(pts[i], 2):5} {round(pts[i + 1], 2): 5} {round(pts[i + 2], 2): 5}")
-    # fig = plt.figure()
-    # ax = plt.axes(projection='3d')
-    # stop_ind = len(pts) // 3
-    # # ax.scatter(pts[0:stop_ind * 3:3], pts[1:stop_ind * 3:3], pts[2:stop_ind * 3:3], 'b')
-    # for i in range(0, stop_ind * 3, 3):  # plot each point + it's index as text above
-    #     ax.scatter(pts[i], pts[i + 1], pts[i + 2], color='b')
-    #     ax.text(pts[i + 0], pts[i + 1], pts[i + 2], '%s' % (str(i // 3)), size=10, zorder=1,
-    #             color='k')
-    #     # if i % 2 == 0:
-    #     #     ax.plot([pts[i], pts[i+3]], [pts[i + 1], pts[i + 4]], [pts[i + 2], pts[i + 5]])
-    # plt.show()

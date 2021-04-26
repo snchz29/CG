@@ -1,10 +1,9 @@
-import ctypes
 import logging
 
 import numpy as np
 from OpenGL.GL import *
 
-from utils.ellipsoid import get_pts, get_indices
+from utils.ellipsoid import get_pts
 from utils.matrix import lookat, identity, ortho, rotz, roty
 
 
@@ -117,7 +116,7 @@ class Drawer:
         glUniformMatrix4fv(self._model_matrix_id, 1, GL_FALSE, model_matrix)
 
     def _draw_axis(self):
-        #glUseProgram(self._shaders_program_id)
+        # glUseProgram(self._shaders_program_id)
         glBegin(GL_LINES)
 
         glColor3f(1.0, 1.0, 0.0)
@@ -142,12 +141,12 @@ class Drawer:
         if key == 83:
             self._camera_pos -= camera_speed * self._camera_front
         if key == 65:
-            self._camera_pos -= 8e-2*np.cross(self._camera_front, self._camera_up)
+            self._camera_pos -= 8e-2 * np.cross(self._camera_front, self._camera_up)
         if key == 68:
-            self._camera_pos += 8e-2*np.cross(self._camera_front, self._camera_up)
-        if key == 16777234: #AL
+            self._camera_pos += 8e-2 * np.cross(self._camera_front, self._camera_up)
+        if key == 16777234:  # AL
             self._psi += 5
-        if key == 16777236: #AR
+        if key == 16777236:  # AR
             self._psi -= 5
         if key == 16777235:
             self._phi -= 5
