@@ -41,3 +41,38 @@ class DrawArea(QGLWidget):
 
     def update(self):
         self.updateGL()
+
+    def set_point_count(self, value):
+        self._drawer.set_point_count(value)
+        self.paintGL()
+        self.update()
+
+    def set_ambient(self, value):
+        self._drawer.set_ambient(value)
+        self.paintGL()
+        self.update()
+
+    def set_clipping_level(self, value):
+        self._drawer.set_clipping_level(value)
+        self.paintGL()
+        self.update()
+
+    def set_x_axis(self, value):
+        self._drawer.set_x_axis(value)
+        self.paintGL()
+        self.update()
+
+    def set_y_axis(self, value):
+        self._drawer.set_y_axis(value)
+        self.paintGL()
+        self.update()
+
+    def set_z_axis(self, value):
+        self._drawer.set_z_axis(value)
+        self.paintGL()
+        self.update()
+
+    def set_projection_state(self, value):
+        self._drawer.set_projection_state(value)
+        self.paintGL()
+        self.update()

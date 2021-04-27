@@ -14,6 +14,6 @@ class MainWindow(QWidget):
         mediator = Mediator()
         self._draw_area = DrawArea(mediator)
         self._main_layout.addWidget(self._draw_area)
-        self._control_panel = ControlPanel(mediator)
+        self._control_panel = ControlPanel(self._draw_area)
         self._main_layout.addWidget(self._control_panel)
         self.setMaximumSize(700, 480)

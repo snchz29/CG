@@ -4,7 +4,7 @@ import numpy as np
 from OpenGL.GL import *
 
 from utils.ellipsoid import get_pts
-from utils.matrix import lookat, identity, ortho, rotz, roty
+from utils.matrix import lookat, identity, ortho, rotz, roty, perspective, frustum
 
 
 def get_file_content(path):
@@ -69,19 +69,47 @@ class Drawer:
         self._view_matrix_id = glGetUniformLocation(self._shaders_program_id, "viewMat")
         self._proj_matrix_id = glGetUniformLocation(self._shaders_program_id, "projMat")
         self._light_pos_id = glGetUniformLocation(self._shaders_program_id, "lightPos")
+        self._ambient_strength_id = glGetUniformLocation(self._shaders_program_id, "ambientStrength")
+        self._ambient_strength = 0.15
         self._camera_pos = np.array([0., 0., 0.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
         self._phi = 0
         self._psi = 0
+        self._points_count = 8
+        self._clipping_level = 0.7
+        self._axis_x = 0.9
+        self._axis_y = 0.9
+        self._axis_z = 0.9
+        self._projection_state = 0
+
+    def set_projection_state(self, value):
+        self._projection_state = value
+
+    def set_x_axis(self, value):
+        self._axis_x = value
+
+    def set_y_axis(self, value):
+        self._axis_y = value
+
+    def set_z_axis(self, value):
+        self._axis_z = value
+
+    def set_point_count(self, value):
+        self._points_count = value
+
+    def set_clipping_level(self, value):
+        self._clipping_level = value
 
     def draw(self):
         self._draw_axis()
         self._draw_ellipsoid()
 
+    def set_ambient(self, value):
+        self._ambient_strength = value
+
     def _draw_ellipsoid(self):
-        points_amount_in_a_row = 8
-        ellipsoid_points = get_pts(points_amount_in_a_row)
+        ellipsoid_points = get_pts(self._points_count, self._clipping_level, self._axis_x, self._axis_y, self._axis_z)
 
         vertex_buffer = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
@@ -89,7 +117,7 @@ class Drawer:
         glBufferData(GL_ARRAY_BUFFER, 4 * len(vertex_data), vertex_data,
                      GL_STATIC_DRAW)
         glUseProgram(self._shaders_program_id)
-        self._set_matrices()
+        self._set_uniform()
 
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, ctypes.c_void_p(0))
@@ -103,10 +131,14 @@ class Drawer:
         glDisableVertexAttribArray(1)
         glUseProgram(0)
 
-    def _set_matrices(self):
-        light_pos = np.array([0., 0., 0.])
-        glUniform3fv(self._light_pos_id, 1, GL_FALSE, light_pos)
-        proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
+    def _set_uniform(self):
+        light_pos = np.array([-5.0, -5.0, -5.0])
+        glUniform3f(self._light_pos_id, light_pos[0], light_pos[1], light_pos[2])
+        glUniform1f(self._ambient_strength_id, self._ambient_strength)
+        if self._projection_state:
+            proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
+        else:
+            proj_matrix = frustum(-2, 2, -2, 2, 4.0, 25.0)
         glUniformMatrix4fv(self._proj_matrix_id, 1, GL_FALSE, proj_matrix)
         view_matrix = lookat(self._camera_pos,
                              self._camera_pos - self._camera_front, self._camera_up)
@@ -134,21 +166,28 @@ class Drawer:
         glUseProgram(0)
 
     def handle_key(self, key):
-        logging.info(key)
         camera_speed = 0.1
         if key == 87:
-            self._camera_pos += camera_speed * self._camera_front
-        if key == 83:
             self._camera_pos -= camera_speed * self._camera_front
+            logging.info(f"Moving camera towards")
+        if key == 83:
+            self._camera_pos += camera_speed * self._camera_front
+            logging.info(f"Moving camera backwards")
         if key == 65:
             self._camera_pos -= 8e-2 * np.cross(self._camera_front, self._camera_up)
+            logging.info(f"Moving camera to left")
         if key == 68:
             self._camera_pos += 8e-2 * np.cross(self._camera_front, self._camera_up)
+            logging.info(f"Moving camera to right")
         if key == 16777234:  # AL
-            self._psi += 5
-        if key == 16777236:  # AR
             self._psi -= 5
+            logging.info(f"Rotating by psi angle")
+        if key == 16777236:  # AR
+            self._psi += 5
+            logging.info(f"Rotating by psi angle")
         if key == 16777235:
-            self._phi -= 5
-        if key == 16777237:
             self._phi += 5
+            logging.info(f"Rotating by phi angle")
+        if key == 16777237:
+            self._phi -= 5
+            logging.info(f"Rotating by phi angle")

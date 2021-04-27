@@ -1,9 +1,9 @@
 import numpy as np
 
 
-def get_raw_pts(n_in_row: int) -> np.ndarray:
+def get_raw_pts(n_in_row: int, x, y, z) -> np.ndarray:
     assert n_in_row > 6
-    result = get_pts_in_octant(n_in_row)
+    result = get_pts_in_octant(n_in_row, x, y, z)
     result = np.append(result, result.dot(np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
@@ -12,10 +12,10 @@ def get_raw_pts(n_in_row: int) -> np.ndarray:
     return result
 
 
-def get_pts_in_octant(n_in_row: int) -> np.ndarray:
-    a1 = 9e-1
-    a2 = 9e-1
-    a3 = 9e-1
+def get_pts_in_octant(n_in_row: int, x, y, z) -> np.ndarray:
+    a1 = x
+    a2 = y
+    a3 = z
     u = np.linspace(0, np.pi / 2, n_in_row)
     v = np.linspace(0, np.pi / 2, n_in_row)
     x = a1 * np.outer(np.cos(u), np.sin(v))
@@ -31,11 +31,12 @@ def get_pts_in_octant(n_in_row: int) -> np.ndarray:
     return res
 
 
-def get_pts(n_in_row: int) -> np.ndarray:
-    pts = get_raw_pts(n_in_row)
+def get_pts(n_in_row: int, level, x, y, z) -> np.ndarray:
+    pts = get_raw_pts(n_in_row, x, y, z)
     pts = pts.reshape((pts.shape[0] * pts.shape[1] // 9, 3, 3))
     pts = add_normals(pts)
-    pts = pts[pts[:, 2] < 0.5]
+    pts = pts[-level < pts[:, 2]]
+    pts = pts[level > pts[:, 2]]
     return pts.reshape(pts.shape[0] * pts.shape[1])
 
 
