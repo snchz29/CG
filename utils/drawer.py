@@ -138,7 +138,7 @@ class Drawer:
         if self._projection_state:
             proj_matrix = ortho(-2, 2, -2, 2, -20, 20)
         else:
-            proj_matrix = frustum(-2, 2, -2, 2, 4.0, 25.0)
+            proj_matrix = ortho(-2, 2, -2, 2, -10, 14.0)
         glUniformMatrix4fv(self._proj_matrix_id, 1, GL_FALSE, proj_matrix)
         view_matrix = lookat(self._camera_pos,
                              self._camera_pos - self._camera_front, self._camera_up)
