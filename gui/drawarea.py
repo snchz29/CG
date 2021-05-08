@@ -2,12 +2,11 @@ from OpenGL.GL import *
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtOpenGL import QGLWidget
 
-from utils.drawer import Drawer, ShadersHandler
+from utils.drawer import Drawer
 
 
 class DrawArea(QGLWidget):
     def __init__(self, mediator):
-        self._shaders_handler = ShadersHandler()
         self._drawer = None
         mediator.register_drawarea(self)
         super().__init__()
@@ -22,8 +21,7 @@ class DrawArea(QGLWidget):
         self._drawer.draw()
 
     def initializeGL(self):
-        self._shaders_handler.init()
-        self._drawer = Drawer(self._shaders_handler)
+        self._drawer = Drawer()
         self.qglClearColor(QtGui.QColor(255, 255, 255))
         glLineWidth(1)
         self.qglColor(QtGui.QColor(255, 0, 0))
