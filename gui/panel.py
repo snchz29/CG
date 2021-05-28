@@ -86,7 +86,7 @@ class ControlPanel(QWidget):
         super().__init__()
         self._main_layout = QVBoxLayout()
         self.setLayout(self._main_layout)
-        self._header_label = QLabel("Лабораторная работа № 6\nКаркасные объекты\n8382 Нечепуренко Н.А., Терехов А.Е.")
+        self._header_label = QLabel("Лабораторная работа № 7\nРеализация трехмерного объекта \nс использованием библиотеки OpenGL \n8382 Нечепуренко Н.А., Терехов А.Е.")
         self._main_layout.addWidget(self._header_label)
         self._axis_label = QLabel("Параметры эллипсоида")
         self._axis_xslider = AxisSlider(drawarea.set_x_axis)
