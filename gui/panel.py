@@ -1,7 +1,7 @@
 import logging
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QSlider, QCheckBox
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QSlider, QCheckBox, QComboBox
 
 
 class PointsCountSlider(QSlider):
@@ -19,6 +19,22 @@ class PointsCountSlider(QSlider):
         logging.info(f"Changed row points count to {self.value()}")
 
 
+class AmbientList(QComboBox):
+    def __init__(self, drawarea):
+        super().__init__()
+        self._drawarea = drawarea
+        self.setFocusPolicy(Qt.NoFocus)
+        self.addItem("Вариант 1")
+        self.addItem("Вариант 2")
+        self.addItem("Вариант 3")
+        self.addItem("Вариант 4")
+        self.currentIndexChanged.connect(self.handler)
+
+    def handler(self):
+        self._drawarea.set_ambient_type(self.currentIndex())
+        logging.info(f"Changed ambient type to {self.currentText()} ({self.currentIndex()})")
+
+
 class AmbientSlider(QSlider):
     def __init__(self, drawarea):
         super().__init__(Qt.Horizontal)
@@ -33,6 +49,7 @@ class AmbientSlider(QSlider):
         value = self.value() / 100
         self._drawarea.set_ambient(value)
         logging.info(f"Changed ambient value to {value}")
+
 
 class ClippingSlider(QSlider):
     def __init__(self, drawarea):
@@ -51,7 +68,6 @@ class ClippingSlider(QSlider):
 
 
 class AxisSlider(QSlider):
-
     def __init__(self, fn):
         super().__init__(Qt.Horizontal)
         self._fn = fn
@@ -79,14 +95,16 @@ class ProjectionCheckbox(QCheckBox):
         logging.info(f"Checkbox value has changed to {self.checkState()}")
 
 
-
-
 class ControlPanel(QWidget):
     def __init__(self, drawarea):
         super().__init__()
         self._main_layout = QVBoxLayout()
         self.setLayout(self._main_layout)
-        self._header_label = QLabel("Лабораторная работа № 7\nРеализация трехмерного объекта \nс использованием библиотеки OpenGL \n8382 Нечепуренко Н.А., Терехов А.Е.")
+        self._header_label = QLabel("""
+Лабораторная работа № 7
+Реализация трехмерного объекта
+с использованием библиотеки OpenGL
+8382 Нечепуренко Н.А., Терехов А.Е.""")
         self._main_layout.addWidget(self._header_label)
         self._axis_label = QLabel("Параметры эллипсоида")
         self._axis_xslider = AxisSlider(drawarea.set_x_axis)
@@ -100,6 +118,9 @@ class ControlPanel(QWidget):
         self._main_layout.addWidget(self._points_count_label)
         self._points_count_slider = PointsCountSlider(drawarea)
         self._main_layout.addWidget(self._points_count_slider)
+        self._ambient_label = QLabel("Тип источника света")
+        self._ambient_type = AmbientList(drawarea)
+        self._main_layout.addWidget(self._ambient_type)
         self._ambient_label = QLabel("Интенсивность источника света")
         self._main_layout.addWidget(self._ambient_label)
         self._ambient_slider = AmbientSlider(drawarea)

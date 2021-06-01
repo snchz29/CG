@@ -45,6 +45,11 @@ class DrawArea(QGLWidget):
         self.paintGL()
         self.update()
 
+    def set_ambient_type(self, value):
+        self._drawer.set_ambient_type(value)
+        self.paintGL()
+        self.update()
+
     def set_ambient(self, value):
         self._drawer.set_ambient(value)
         self.paintGL()
