@@ -7,6 +7,7 @@ def get_raw_pts(n_in_row: int, x, y, z) -> np.ndarray:
     result = np.append(result, result.dot(np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, -1, 0], [0, 0, 1]])), 0)
     result = np.append(result, result.dot(np.array([[1, 0, 0], [0, 1, 0], [0, 0, -1]])), 0)
+    result = result.dot(np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]]))
     indices = get_indices(n_in_row)
     result = result[indices]
     return result
@@ -35,8 +36,8 @@ def get_pts(n_in_row: int, level, x, y, z) -> np.ndarray:
     pts = get_raw_pts(n_in_row, x, y, z)
     pts = pts.reshape((pts.shape[0] * pts.shape[1] // 9, 3, 3))
     pts = add_normals(pts)
-    pts = pts[-level < pts[:, 2]]
-    pts = pts[level > pts[:, 2]]
+    pts = pts[-level < pts[:, 1]]
+    pts = pts[level > pts[:, 1]]
     return pts.reshape(pts.shape[0] * pts.shape[1])
 
 
