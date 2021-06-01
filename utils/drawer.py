@@ -10,6 +10,7 @@ class Drawer:
         self._pts = [[-0.5, -0.5, 0.], [.5, .5, 0.]]
         self._ambient_type = 0
         self._ambient_strength = 0.15
+        self.shininess = False
         self._camera_pos = np.array([0., 0., -2.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
@@ -50,11 +51,16 @@ class Drawer:
     def set_ambient(self, value):
         self._ambient_strength = value
 
+    def set_shininess_state(self, value):
+        self.shininess = value
+
     def _draw_ellipsoid(self):
+        glFrontFace(GL_CW)
         self._set_uniform()
+        self._set_material()
+        self._set_light()
         ellipsoid_points = get_pts(self._points_count, self._clipping_level, self._axis_x, self._axis_y, self._axis_z)
         glBegin(GL_TRIANGLES)
-        glColor4f(1, 0, 0, 1.0)
         for i in range(0, len(ellipsoid_points), 6):
             glNormal3f(ellipsoid_points[i + 3],
                        ellipsoid_points[i + 4],
@@ -63,32 +69,34 @@ class Drawer:
                        ellipsoid_points[i + 1],
                        ellipsoid_points[i + 2])
         glEnd()
-        self._set_light()
 
     def _set_light(self):
         glDisable(GL_LIGHT0)
         glEnable(GL_LIGHTING)
         if self._ambient_type == 0:
             glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE)
-            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([1, 1, 1, 0.5]))
             glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 1, 1, 0.5]))
-            glLightfv(GL_LIGHT0, GL_SPECULAR, np.array([1, 1, 1, 0.5]))
         elif self._ambient_type == 1:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([5.0, -5.0, -5.0, 1.0]))
-            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([1, 0, 0, 0.5]))
+            glLightfv(GL_LIGHT0, GL_POSITION, np.array([-5.0, 5.0, 5.0, 1.0]))
             glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 1, 1, 0.5]))
-            glLightfv(GL_LIGHT0, GL_SPECULAR, np.array([1, 1, 1, 0.5]))
         elif self._ambient_type == 2:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([-5.0, 5.0, -5.0, 1.0]))
-            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([1, 0, 0, 0.5]))
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([0, 1, 0, 0.5]))
-            glLightfv(GL_LIGHT0, GL_SPECULAR, np.array([1, 1, 1, 0.5]))
+            glLightfv(GL_LIGHT0, GL_POSITION, np.array([5.0, -5.0, 5.0, 1.0]))
+            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([0, 1, 0, 0.5]))
+            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 0, 1, 0.5]))
         elif self._ambient_type == 3:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([5.0, 5.0, -5.0, 1.0]))
+            glLightfv(GL_LIGHT0, GL_POSITION, np.array([3.0, 3.0, 3.0, 1.0]))
             glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([1, 0, 0, 0.5]))
             glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([0, 1, 0, 0.5]))
             glLightfv(GL_LIGHT0, GL_SPECULAR, np.array([0, 0, 1, 0.5]))
         glEnable(GL_LIGHT0)
+
+    def _set_material(self):
+        if self.shininess:
+            glMaterialfv(GL_FRONT, GL_SPECULAR, np.array([1, 1, 1, 1]))
+            glMaterialf(GL_FRONT, GL_SHININESS, 128.0)
+        else:
+            glMaterialfv(GL_FRONT, GL_SPECULAR, np.array([1, 1, 1, 1]))
+            glMaterialf(GL_FRONT, GL_SHININESS, 6)
 
     def _set_uniform(self):
         glMatrixMode(GL_MODELVIEW)

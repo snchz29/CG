@@ -51,6 +51,18 @@ class AmbientSlider(QSlider):
         logging.info(f"Changed ambient value to {value}")
 
 
+class ShininessCheckbox(QCheckBox):
+    def __init__(self, drawarea):
+        super().__init__("Включить блеск")
+        self._drawarea = drawarea
+        self.setFocusPolicy(Qt.NoFocus)
+        self.stateChanged.connect(self.handler)
+
+    def handler(self):
+        self._drawarea.set_shininess_state(self.checkState())
+        logging.info(f"Shininess checkbox value has changed to {self.checkState()}")
+
+
 class ClippingSlider(QSlider):
     def __init__(self, drawarea):
         super().__init__(Qt.Horizontal)
@@ -92,7 +104,7 @@ class ProjectionCheckbox(QCheckBox):
 
     def handler(self):
         self._drawarea.set_projection_state(self.checkState())
-        logging.info(f"Checkbox value has changed to {self.checkState()}")
+        logging.info(f"Projection checkbox value has changed to {self.checkState()}")
 
 
 class ControlPanel(QWidget):
@@ -120,11 +132,16 @@ class ControlPanel(QWidget):
         self._main_layout.addWidget(self._points_count_slider)
         self._ambient_label = QLabel("Тип источника света")
         self._ambient_type = AmbientList(drawarea)
+        self._main_layout.addWidget(self._ambient_label)
         self._main_layout.addWidget(self._ambient_type)
         self._ambient_label = QLabel("Интенсивность источника света")
         self._main_layout.addWidget(self._ambient_label)
         self._ambient_slider = AmbientSlider(drawarea)
         self._main_layout.addWidget(self._ambient_slider)
+        self._shininess_label = QLabel("Вид проекции (ортог. или персп.)")
+        self._shininess_checkbox = ShininessCheckbox(drawarea)
+        self._main_layout.addWidget(self._shininess_label)
+        self._main_layout.addWidget(self._shininess_checkbox)
         self._clipping_label = QLabel("Граница отсечения")
         self._clipping_slider = ClippingSlider(drawarea)
         self._main_layout.addWidget(self._clipping_label)

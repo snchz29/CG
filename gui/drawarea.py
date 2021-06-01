@@ -55,6 +55,11 @@ class DrawArea(QGLWidget):
         self.paintGL()
         self.update()
 
+    def set_shininess_state(self, value):
+        self._drawer.set_shininess_state(value)
+        self.paintGL()
+        self.update()
+
     def set_clipping_level(self, value):
         self._drawer.set_clipping_level(value)
         self.paintGL()
