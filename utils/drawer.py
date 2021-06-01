@@ -1,19 +1,15 @@
 import logging
-import random
-
 import numpy as np
 from OpenGL.GL import *
 from OpenGL.raw.GLU import gluPerspective
-
 from utils.ellipsoid import get_pts
-from utils.matrix import lookat, identity, ortho, rotz, roty
 
 
 class Drawer:
     def __init__(self):
         self._pts = [[-0.5, -0.5, 0.], [.5, .5, 0.]]
         self._ambient_strength = 0.15
-        self._camera_pos = np.array([0., 0., 0.])
+        self._camera_pos = np.array([0., 0., -2.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
         self._phi = 0
@@ -69,10 +65,17 @@ class Drawer:
     def _set_uniform(self):
         light_pos = np.array([-5.0, -5.0, -5.0, 1.0])
         glLightfv(GL_LIGHT0, GL_POSITION, light_pos)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glTranslated(self._camera_pos[0], self._camera_pos[1], self._camera_pos[2])
+        glRotated(self._phi, 1, 0, 0)
+        glRotated(self._psi, 0, 1, 0)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
         if self._projection_state:
-            gluPerspective(75, 0, -1, 1)
+            gluPerspective(90.0, 700 / 480, 0.1, 10.0)
         else:
-            glOrtho(-1, 1, -1, 1, -1, 1)
+            glOrtho(-2, 2, -2, 2, -2, 20)
 
     def _draw_axis(self):
         glBegin(GL_LINES)
@@ -97,7 +100,7 @@ class Drawer:
             logging.info(f"Moving camera towards")
         if key == 83:
             self._camera_pos += camera_speed * self._camera_front
-            logging.info(f"Moving camera backwards")
+            logging.info(f"Moving camera backwards {self._camera_pos}")
         if key == 65:
             self._camera_pos -= 8e-2 * np.cross(self._camera_front, self._camera_up)
             logging.info(f"Moving camera to left")
