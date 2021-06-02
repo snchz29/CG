@@ -1,7 +1,7 @@
 import logging
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QSlider, QCheckBox, QComboBox
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget, QSlider, QCheckBox, QComboBox, QColorDialog, QPushButton
 
 
 class PointsCountSlider(QSlider):
@@ -19,41 +19,56 @@ class PointsCountSlider(QSlider):
         logging.info(f"Changed row points count to {self.value()}")
 
 
-class AmbientList(QComboBox):
-    def __init__(self, drawarea):
-        super().__init__()
-        self._drawarea = drawarea
+class ColorPicker(QPushButton):
+    def __init__(self, label, drawarea):
+        super().__init__(label)
+        self.drawarea = drawarea
+        self.color_dialog = QColorDialog()
         self.setFocusPolicy(Qt.NoFocus)
-        self.addItem("Вариант 1")
-        self.addItem("Вариант 2")
-        self.addItem("Вариант 3")
-        self.addItem("Вариант 4")
-        self.currentIndexChanged.connect(self.handler)
+        self.clicked.connect(self.button_clicked)
+        self.color_dialog.accepted.connect(self.color_accepted)
 
-    def handler(self):
-        self._drawarea.set_ambient_type(self.currentIndex())
-        logging.info(f"Changed ambient type to {self.currentText()} ({self.currentIndex()})")
+    def button_clicked(self):
+        self.color_dialog.show()
+
+    def color_accepted(self):
+        color = self.color_dialog.currentColor().red(), \
+                self.color_dialog.currentColor().green(), \
+                self.color_dialog.currentColor().blue()
+        logging.info(f"Choose color {color}")
+        return color
 
 
-class AmbientSlider(QSlider):
+class AmbientColorPicker(ColorPicker):
     def __init__(self, drawarea):
-        super().__init__(Qt.Horizontal)
-        self._drawarea = drawarea
-        self.setFocusPolicy(Qt.NoFocus)
-        self.setMinimum(-100)
-        self.setMaximum(100)
-        self.setValue(15)
-        self.valueChanged.connect(self.handler)
+        super().__init__("Ambient", drawarea)
 
-    def handler(self):
-        value = self.value() / 100
-        self._drawarea.set_ambient(value)
-        logging.info(f"Changed ambient value to {value}")
+    def color_accepted(self):
+        color = super().color_accepted()
+        self.drawarea.set_ambient_color(*color)
+
+
+class DiffuseColorPicker(ColorPicker):
+    def __init__(self, drawarea):
+        super().__init__("Diffuse", drawarea)
+
+    def color_accepted(self):
+        color = super().color_accepted()
+        self.drawarea.set_diffuse_color(*color)
+
+
+class SpecularColorPicker(ColorPicker):
+    def __init__(self, drawarea):
+        super().__init__("Specular", drawarea)
+
+    def color_accepted(self):
+        color = super().color_accepted()
+        self.drawarea.set_specular_color(*color)
 
 
 class ShininessCheckbox(QCheckBox):
     def __init__(self, drawarea):
-        super().__init__("Включить блеск")
+        super().__init__("Включить отражение света")
         self._drawarea = drawarea
         self.setFocusPolicy(Qt.NoFocus)
         self.stateChanged.connect(self.handler)
@@ -130,17 +145,15 @@ class ControlPanel(QWidget):
         self._main_layout.addWidget(self._points_count_label)
         self._points_count_slider = PointsCountSlider(drawarea)
         self._main_layout.addWidget(self._points_count_slider)
-        self._ambient_label = QLabel("Тип источника света")
-        self._ambient_type = AmbientList(drawarea)
+        self._ambient_label = QLabel("Цвета источника света")
         self._main_layout.addWidget(self._ambient_label)
-        self._main_layout.addWidget(self._ambient_type)
-        self._ambient_label = QLabel("Интенсивность источника света")
-        self._main_layout.addWidget(self._ambient_label)
-        self._ambient_slider = AmbientSlider(drawarea)
-        self._main_layout.addWidget(self._ambient_slider)
-        self._shininess_label = QLabel("Вид проекции (ортог. или персп.)")
+        self._ambient_color_picker = AmbientColorPicker(drawarea)
+        self._diffuse_color_picker = DiffuseColorPicker(drawarea)
+        self._specular_color_picker = SpecularColorPicker(drawarea)
+        self._main_layout.addWidget(self._ambient_color_picker)
+        self._main_layout.addWidget(self._diffuse_color_picker)
+        self._main_layout.addWidget(self._specular_color_picker)
         self._shininess_checkbox = ShininessCheckbox(drawarea)
-        self._main_layout.addWidget(self._shininess_label)
         self._main_layout.addWidget(self._shininess_checkbox)
         self._clipping_label = QLabel("Граница отсечения")
         self._clipping_slider = ClippingSlider(drawarea)

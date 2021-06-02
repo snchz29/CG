@@ -7,10 +7,10 @@ from utils.ellipsoid import get_pts
 
 class Drawer:
     def __init__(self):
-        self._pts = [[-0.5, -0.5, 0.], [.5, .5, 0.]]
-        self._ambient_type = 0
-        self._ambient_strength = 0.15
-        self.shininess = False
+        self._ambient_color = np.array([0, 0, 0, 1])
+        self._diffuse_color = np.array([1, 1, 1, 1])
+        self._specular_color = np.array([0, 0, 0, 1])
+        self._shininess = 0
         self._camera_pos = np.array([0., 0., -2.])
         self._camera_front = np.array([0., 0., -1.])
         self._camera_up = np.array([0., 1., 0.])
@@ -38,21 +38,24 @@ class Drawer:
     def set_point_count(self, value):
         self._points_count = value
 
+    def set_shininess_state(self, value):
+        self._shininess = value
+
     def set_clipping_level(self, value):
         self._clipping_level = value
+
+    def set_ambient_color(self, red, green, blue):
+        self._ambient_color = np.array([red, green, blue, 0.1]) / 255
+
+    def set_diffuse_color(self, red, green, blue):
+        self._diffuse_color = np.array([red, green, blue, 0.1]) / 255
+
+    def set_specular_color(self, red, green, blue):
+        self._specular_color = np.array([red, green, blue, 0.1]) / 255
 
     def draw(self):
         self._draw_axis()
         self._draw_ellipsoid()
-
-    def set_ambient_type(self, value):
-        self._ambient_type = value
-
-    def set_ambient(self, value):
-        self._ambient_strength = value
-
-    def set_shininess_state(self, value):
-        self.shininess = value
 
     def _draw_ellipsoid(self):
         glFrontFace(GL_CW)
@@ -72,31 +75,21 @@ class Drawer:
 
     def _set_light(self):
         glDisable(GL_LIGHT0)
+        glDisable(GL_LIGHTING)
         glEnable(GL_LIGHTING)
-        if self._ambient_type == 0:
-            glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE)
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 1, 1, 0.5]))
-        elif self._ambient_type == 1:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([-5.0, 5.0, 5.0, 1.0]))
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 1, 1, 0.5]))
-        elif self._ambient_type == 2:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([5.0, -5.0, 5.0, 1.0]))
-            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([0, 1, 0, 0.5]))
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([1, 0, 1, 0.5]))
-        elif self._ambient_type == 3:
-            glLightfv(GL_LIGHT0, GL_POSITION, np.array([3.0, 3.0, 3.0, 1.0]))
-            glLightfv(GL_LIGHT0, GL_AMBIENT, np.array([1, 0, 0, 0.5]))
-            glLightfv(GL_LIGHT0, GL_DIFFUSE, np.array([0, 1, 0, 0.5]))
-            glLightfv(GL_LIGHT0, GL_SPECULAR, np.array([0, 0, 1, 0.5]))
         glEnable(GL_LIGHT0)
+        glLightfv(GL_LIGHT0, GL_POSITION, np.array([3.0, 3.0, 3.0, 1.0]))
+        glLightfv(GL_LIGHT0, GL_AMBIENT, self._ambient_color)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, self._diffuse_color)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, self._specular_color)
 
     def _set_material(self):
-        if self.shininess:
-            glMaterialfv(GL_FRONT, GL_SPECULAR, np.array([1, 1, 1, 1]))
+        if self._shininess == 2:
+            glMaterialfv(GL_FRONT, GL_SPECULAR, self._specular_color)
             glMaterialf(GL_FRONT, GL_SHININESS, 128.0)
-        else:
-            glMaterialfv(GL_FRONT, GL_SPECULAR, np.array([1, 1, 1, 1]))
-            glMaterialf(GL_FRONT, GL_SHININESS, 6)
+        elif self._shininess == 0:
+            glMaterialfv(GL_FRONT, GL_SPECULAR, np.array([0, 0, 0, 1]))
+            glMaterialf(GL_FRONT, GL_SHININESS, 128.0)
 
     def _set_uniform(self):
         glMatrixMode(GL_MODELVIEW)
@@ -111,7 +104,8 @@ class Drawer:
         elif self._projection_state == 2:
             glOrtho(-2, 2, -2, 2, -2, 20)
 
-    def _draw_axis(self):
+    @staticmethod
+    def _draw_axis():
         glBegin(GL_LINES)
 
         glColor3f(1.0, 1.0, 0.0)

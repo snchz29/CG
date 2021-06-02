@@ -45,13 +45,18 @@ class DrawArea(QGLWidget):
         self.paintGL()
         self.update()
 
-    def set_ambient_type(self, value):
-        self._drawer.set_ambient_type(value)
+    def set_ambient_color(self, red, green, blue):
+        self._drawer.set_ambient_color(red, green, blue)
         self.paintGL()
         self.update()
 
-    def set_ambient(self, value):
-        self._drawer.set_ambient(value)
+    def set_diffuse_color(self, red, green, blue):
+        self._drawer.set_diffuse_color(red, green, blue)
+        self.paintGL()
+        self.update()
+
+    def set_specular_color(self, red, green, blue):
+        self._drawer.set_specular_color(red, green, blue)
         self.paintGL()
         self.update()
 
