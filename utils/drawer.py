@@ -21,7 +21,11 @@ class Drawer:
         self._axis_x = 0.9
         self._axis_y = 0.9
         self._axis_z = 0.9
-        self._projection_state = 0
+        self._projection_state = 2
+        self.ortho_x = 2
+        self.ortho_y = 2
+        self.ortho_z = 2
+        self.fov = 90.0
 
     def set_projection_state(self, value):
         self._projection_state = value
@@ -100,9 +104,9 @@ class Drawer:
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         if self._projection_state == 0:
-            gluPerspective(90.0, 480 / 700, 0.1, 10.0)
+            gluPerspective(self.fov, 480 / 700, 0.1, 10.0)
         elif self._projection_state == 2:
-            glOrtho(-2, 2, -2, 2, -2, 20)
+            glOrtho(-self.ortho_x, self.ortho_x, -self.ortho_y, self.ortho_y, -self.ortho_z, 18+self.ortho_z)
 
     @staticmethod
     def _draw_axis():

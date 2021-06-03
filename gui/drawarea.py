@@ -89,3 +89,23 @@ class DrawArea(QGLWidget):
         self._drawer.set_projection_state(value)
         self.paintGL()
         self.update()
+
+    def set_x_ortho(self, x):
+        self._drawer.c = x
+        self.paintGL()
+        self.update()
+
+    def set_y_ortho(self, y):
+        self._drawer.ortho_y = y
+        self.paintGL()
+        self.update()
+
+    def set_z_ortho(self, z):
+        self._drawer.ortho_z = z
+        self.paintGL()
+        self.update()
+
+    def set_fov(self, fov):
+        self._drawer.fov = fov
+        self.paintGL()
+        self.update()
